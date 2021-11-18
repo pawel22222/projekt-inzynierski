@@ -1,2 +1,2 @@
 # projekt-inzynierski
-Projekt inżynierski - przeglądarka filmów
+Projekt inżynierski: przeglądarka filmów
