@@ -1,12 +1,10 @@
-import React from 'react'
-import { useState, useEffect } from 'react/cjs/react.development'
+import { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { getMovieById } from '../../../data/getMovies'
 
 import AlertMain from '../../UI/AlertMain'
 import SpinnerLoading from '../../UI/SpinnerLoading'
-
-// danger: todo: sprawdź czy szukany film jest w movies w root
 
 //#region Styled components
 const MovieDiv = styled.div`
@@ -22,9 +20,9 @@ const Info = styled.div`
 `
 //#endregion
 
-function Movie(props) {
-    const thisMovieId = props.match.params.id
-    const [movieDisplayPage, setMovieDisplayPage] = useState({})
+function Movie() {
+    const { id } = useParams()
+    const [movieDisplayPage, setMovieDisplayPage] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState('')
 
@@ -45,16 +43,16 @@ function Movie(props) {
             }
             setLoading(false)
         }
-        getMovie(thisMovieId)
 
-    }, [thisMovieId])
+        getMovie(id)
+    }, [id])
 
     return (
         <MovieDiv>
             { error && <AlertMain type="danger">{ error }</AlertMain> }
             { (loading) && <SpinnerLoading /> }
 
-            { (movieDisplayPage.title) ? (
+            { (Object.entries(movieDisplayPage).length > 0) ? (
                 <>
                     <Poster
                         src={ `https://image.tmdb.org/t/p/w500/${movieDisplayPage.poster}` }
