@@ -3,7 +3,7 @@ import GlobalStyle from '../../theme/GlobalStyle'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { AuthProvider } from '../../context/AuthContext'
 import PrivateRoute from '../privateRoute/PrivateRoute'
-import uploadMovies from '../../data/uploadMovies'
+// import uploadMovies from '../../data/uploadMovies'
 
 // Components
 import SignUp from '../SignUp/SignUp'
@@ -23,7 +23,6 @@ function Root() {
   return (
     <div>
       <GlobalStyle />
-
 
       <Router>
         <AuthProvider>

@@ -11,19 +11,18 @@ const SearchbarDiv = styled.div`
     display: flex;
     flex-flow: column;
     align-items: center;
-    `
+`
 const Input = styled.input`
     height: 35px;
     width: 70%;
     border-radius: 5px;
     border: 2px solid #cdcdcd;
-    `
+`
 const SearchResults = styled.div`
     background-color: gray;
     width: 70%;
     border-radius: 5px;
-    /* border: 2px solid #cdcdcd; */
-    `
+`
 //#endregion
 
 function Searchbar() {
