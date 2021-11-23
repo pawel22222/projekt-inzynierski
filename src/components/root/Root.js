@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import GlobalStyle from '../../theme/GlobalStyle'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { AuthProvider } from '../../context/AuthContext'
@@ -18,7 +17,6 @@ import Movies from '../movies/Movies'
 import Movie from '../movies/movie/Movie'
 
 function Root() {
-  const [movies, setMovies] = useState([])
 
   return (
     <div>
@@ -37,9 +35,9 @@ function Root() {
             <Route path="/forgot-password" component={ ForgotPassword } />
             <Route
               path="/movies"
-              component={ () => <Movies movies={ movies } setMovies={ setMovies } /> }
+              component={ () => <Movies /> }
             />
-            <Route path="/movie/:id" component={ Movie }
+            <Route path="/movie/:movieId" component={ Movie }
             />
           </Switch>
         </AuthProvider>

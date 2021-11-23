@@ -16,7 +16,9 @@ function uploadMovies() {
                 language: movie.language,
                 release_date: movie.release_date,
                 backdrop: movie.backdrop,
-                poster: movie.poster
+                poster: movie.poster,
+                ratingCounter: 0,
+                averageRatings: 0
             }))
     })
     Promise.all(promises)

@@ -2,9 +2,12 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { getMovieById } from '../../../data/getMovies'
+import { useAuth } from '../../../context/AuthContext'
+import { Link } from 'react-router-dom'
 
 import AlertMain from '../../UI/AlertMain'
 import SpinnerLoading from '../../UI/SpinnerLoading'
+import StarRating from '../../starRating/StarRating'
 
 //#region Styled components
 const MovieDiv = styled.div`
@@ -21,10 +24,11 @@ const Info = styled.div`
 //#endregion
 
 function Movie() {
-    const { id } = useParams()
+    const { movieId } = useParams()
     const [movieDisplayPage, setMovieDisplayPage] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState('')
+    const { currentUser } = useAuth()
 
     const mapGenres = (genres) => genres.map(genre => ` ${genre}`)
 
@@ -39,13 +43,13 @@ function Movie() {
                         setMovieDisplayPage(doc.data())
                     })
             } catch (error) {
-                setError(`Failed to Sign In. (${error.code})`)
+                setError(`Failed to fetch movie. (${error})`)
             }
             setLoading(false)
         }
 
-        getMovie(id)
-    }, [id])
+        getMovie(movieId)
+    }, [movieId])
 
     return (
         <MovieDiv>
@@ -59,8 +63,20 @@ function Movie() {
                         alt={ movieDisplayPage.title }
                     />
                     <Info>
-                        <h1>{ movieDisplayPage.title }</h1>
+                        <h1>{ movieDisplayPage.title + ' (' + movieDisplayPage.id + ')' }</h1>
                         <p>{ `Data wydania: ${movieDisplayPage.release_date}` }</p>
+                        <p>{ `Średnia ocen:
+                            ${movieDisplayPage.averageRatings.toFixed(2)} / 5
+                            (${movieDisplayPage.ratingCounter})` }
+                        </p>
+                        {
+                            (currentUser)
+                                ? <>
+                                    <h3>Twoja ocena:</h3>
+                                    <StarRating movieId={ movieId } />
+                                </>
+                                : <Link to="/login">Zaloguj się, aby ocenić</Link>
+                        }
                         <p>{ `Kategorie: ${mapGenres(movieDisplayPage.genre)}` }</p>
                         { movieDisplayPage.desc }
                     </Info>

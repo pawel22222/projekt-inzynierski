@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link } from 'react-router-dom'
-import { getPaginatedMovies } from '../../data/getMovies'
+import { db } from '../../firebase'
 
 import AlertMain from '../UI/AlertMain'
 import SpinnerLoading from '../UI/SpinnerLoading'
@@ -41,14 +41,15 @@ const StyledLink = styled(Link)`
 `
 //#endregion
 
-function Movies({ movies, setMovies }) {
+function Movies() {
 	const [error, setError] = useState('')
 	const [loading, setLoading] = useState('')
+
+	const [movies, setMovies] = useState([])
 	const [lastDoc, setLastDoc] = useState('')
 
 	const mapGenres = (genres) => genres.map(genre => ` ${genre}`)
 	const mapDate = (date) => date.slice(0, 4)
-
 
 	const fetchMovies = async () => {
 		try {
@@ -56,7 +57,11 @@ function Movies({ movies, setMovies }) {
 			setError('')
 			setLoading(true)
 
-			await getPaginatedMovies('title', lastDoc, 6)
+			await db.collection('movies')
+				// .orderBy('title')
+				.orderBy('ratingCounter', 'desc')
+				.startAfter(lastDoc)
+				.limit(6)
 				.get()
 				.then((querySnapshot) => {
 					setLastDoc(...querySnapshot.docs.slice(-1))
@@ -69,7 +74,7 @@ function Movies({ movies, setMovies }) {
 				})
 
 		} catch (error) {
-			setError(`Failed to Sign In. (${error})`)
+			setError(`Failed to fetch movies. (${error})`)
 		}
 
 		setLoading(false)
