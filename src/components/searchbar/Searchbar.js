@@ -64,7 +64,7 @@ function Searchbar() {
             <Input
                 type='search'
                 ref={ inputRef }
-                placeholder="Search movie.."
+                placeholder="Szukaj.."
                 value={ input }
                 onChange={ (e) => setInput(firstCharToUpper(e.target.value)) }
                 onBlur={ () => setTimeout(() => setDisplaySearchbarResult(false), 100) }

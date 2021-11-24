@@ -41,9 +41,9 @@ export default function Header() {
 
   const greetingUser = () => {
     if (userInfo?.name || userInfo?.displayName)
-      return `Hi  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`
+      return `Witaj  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`
     else if (currentUser) return `Hi ${currentUser.email.split('@')[0]}`
-    else return `Hello there`
+    // else return `Witaj`
   }
 
   return (
@@ -58,13 +58,13 @@ export default function Header() {
           <>
             <Link to="/profile" style={ { width: '100%' } }>
               <Button
-                label="My account"
+                label="Moje konto"
                 type="button"
               />
             </Link>
             <Button
               onClick={ handleLogOut }
-              label="Log out"
+              label="Wyloguj"
               type="button"
               color="secondary"
             />
@@ -73,7 +73,7 @@ export default function Header() {
           <>
             <Link to="/login">
               <Button
-                label="Login"
+                label="Zaloguj się"
                 type="button"
                 color="secondary"
               />

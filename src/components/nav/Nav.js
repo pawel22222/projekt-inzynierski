@@ -14,8 +14,8 @@ const LinkLabel = styled.div`
 function Nav() {
     return (
         <NavDiv>
-            <Link to="/"><LinkLabel>Home</LinkLabel></Link>
-            <Link to="/movies"><LinkLabel>Movies</LinkLabel></Link>
+            <Link to="/"><LinkLabel>Strona główna</LinkLabel></Link>
+            <Link to="/movies"><LinkLabel>Filmy</LinkLabel></Link>
 
 
         </NavDiv>

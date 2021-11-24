@@ -12,10 +12,10 @@ export default function UpdateProfile() {
   return (
     <>
       <AuthWrapper>
-        <h1 style={ { textAlign: 'center' } }>Profile update</h1>
+        <h1 style={ { textAlign: 'center' } }>Aktualizacja danych</h1>
         <nav>
-          <Link to="/update-profile/security">Security </Link>
-          <Link to="/update-profile/personal-info">Personal Info </Link>
+          <Link to="/update-profile/security">Zabezpieczenia </Link>
+          <Link to="/update-profile/personal-info">Prywatne </Link>
         </nav>
         <ColoredLine color="#d1d1d1" />
 
@@ -25,7 +25,7 @@ export default function UpdateProfile() {
 
         <Link to="/profile">
           <Button
-            label="Back"
+            label="Wstecz"
             type="button"
             color="secondary"
           />
