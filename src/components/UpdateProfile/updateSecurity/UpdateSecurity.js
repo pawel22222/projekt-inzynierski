@@ -54,7 +54,7 @@ export default function UpdateSecurity() {
     }
     return (
         <>
-            <h2>Security</h2>
+            <h2>Zabezpieczenia</h2>
             { error && <Alert
                 type="danger">{ error }
             </Alert> }
@@ -71,18 +71,18 @@ export default function UpdateSecurity() {
                 />
                 <FormGroup
                     id="password"
-                    label="Password"
+                    label="Hasło"
                     type="password"
                     ref={ passwordRef }
                 />
                 <FormGroup
                     id="passwordComfirm"
-                    label="Password comfirmation"
+                    label="Powtórz hasło"
                     type="password"
                     ref={ passwordComfirmRef }
                 />
                 <Button
-                    label="Update profile"
+                    label="Aktualizuj profil"
                     type="submit"
                     loading={ loading }
                 />

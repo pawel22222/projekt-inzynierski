@@ -38,7 +38,7 @@ export default function ForgotPassword() {
   return (
     <>
       <AuthWrapper>
-        <h2 style={ { textAlign: 'center' } }>Password Reset</h2>
+        <h2 style={ { textAlign: 'center' } }>Reset hasła</h2>
         { error && <AlertMain type="danger">
           { error }
         </AlertMain> }
@@ -54,7 +54,7 @@ export default function ForgotPassword() {
             ref={ emailRef }
           />
           <ButtonSubmit
-            label="Reset Password"
+            label="Wyślij link zmiany hasła"
             type="submit"
             loading={ loading }
           />
@@ -62,7 +62,7 @@ export default function ForgotPassword() {
         </Form>
         <AuthHelperWrapper>
           <div>
-            Need an account? <Link to="/signup">Sign Up</Link>
+            Nie masz konta? <Link to="/signup">Stwórz konto</Link>
           </div>
         </AuthHelperWrapper>
       </AuthWrapper>

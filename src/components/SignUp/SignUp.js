@@ -44,7 +44,7 @@ export default function SignUp() {
   return (
     <>
       <AuthWrapper>
-        <h2 style={ { textAlign: 'center' } }>Sign in</h2>
+        <h2 style={ { textAlign: 'center' } }>Rejestracja</h2>
         { error && <AlertMain
           type="danger">{ error }
         </AlertMain> }
@@ -59,28 +59,28 @@ export default function SignUp() {
           />
           <FormGroup
             id="password"
-            label="Password"
+            label="Hasło"
             type="password"
             ref={ passwordRef }
             required={ true }
           />
           <FormGroup
             id="passwordConfirm"
-            label="Password Confirmation"
+            label="Powtórz hasło"
             type="password"
             ref={ passwordConfirmRef }
             required={ true }
           />
           <ButtonSubmit
-            label="Sing Up"
+            label="Stwórz konto"
             type="submit"
             loading={ loading }
           />
           { (loading) && <SpinnerLoading /> }
         </Form>
         <AuthHelperWrapper>
-          Already have an account? <Link
-            to="/login">Log In
+          Masz już konto? <Link
+            to="/login">Zaloguj się
           </Link>
         </AuthHelperWrapper>
       </AuthWrapper>

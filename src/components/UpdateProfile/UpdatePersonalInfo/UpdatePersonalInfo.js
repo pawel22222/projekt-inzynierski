@@ -52,7 +52,7 @@ export default function UpdatePersonalInfo() {
 
     return (
         <>
-            <h2>Personal Info</h2>
+            <h2>Dane</h2>
 
             { error && <Alert
                 type="danger">{ error }
@@ -64,35 +64,35 @@ export default function UpdatePersonalInfo() {
             <Form onSubmit={ handleSubmit }>
                 <FormGroup
                     id="name"
-                    label="Name"
+                    label="Imię"
                     type="name"
                     ref={ nameRef }
                     defaultValue={ '' || userInfo?.name }
                 />
                 <FormGroup
                     id="lastName"
-                    label="Last Name"
+                    label="Nazwisko"
                     type="lastName"
                     ref={ lastNameRef }
                     defaultValue={ '' || userInfo?.lastName }
                 />
                 <FormGroup
                     id="displayName"
-                    label="Display Name"
+                    label="Wyświetlana nazwa"
                     type="displayName"
                     ref={ displayNameRef }
                     defaultValue={ '' || userInfo?.displayName }
                 />
                 <FormGroup
                     id="yearOfBirthRef"
-                    label="Year of birth"
+                    label="Rok urodzenia"
                     type="number"
                     min="1900" max="2010" step="1"
                     placeholder="1900-2010"
                     ref={ yearOfBirthRef }
                     defaultValue={ '' || userInfo?.age }
                 />
-                <label>Sex</label>
+                <label>Płeć</label>
                 <form id="sex">
                     <select
                         name="dropdown"
@@ -100,12 +100,12 @@ export default function UpdatePersonalInfo() {
                         defaultValue={ '' || userInfo?.sex }
                     >
                         <option value="" selected> -- </option>
-                        <option value="male" >Male</option>
-                        <option value="famale">Famale</option>
+                        <option value="male" >Mężczyzna</option>
+                        <option value="famale">Kobieta</option>
                     </select>
                 </form>
                 <Button
-                    label="Update profile"
+                    label="Aktualizuj profil"
                     type="submit"
                     loading={ loading }
                     onClick={ handleSubmit }

@@ -11,7 +11,6 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(auth.currentUser)
   const [userInfo, setUserInfo] = useState({})
   const [loading, setLoading] = useState(true)
-  // const [allMovies, setAllMovies] = useState([])
 
   const signup = (email, password) =>
     auth.createUserWithEmailAndPassword(email, password)
@@ -36,22 +35,6 @@ export function AuthProvider({ children }) {
         setUserInfo(docs.data())
       })
   }
-
-  // const getAllMovies = () => {
-  //   db.collection('movies')
-  //     .get()
-  //     .then((querySnapshot) => {
-  //       querySnapshot.forEach(doc => {
-  //         console.log(doc.id, " => ", doc.data())
-  //       })
-  //       setUserInfo(querySnapshot.data())
-  //     })
-  //     .catch((error) => {
-  //       console.log("Error getting documents: ", error)
-  //     })
-  // }
-
-
 
   useEffect(() => {
     const unsubscribe = () => auth.onAuthStateChanged(user => {

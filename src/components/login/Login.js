@@ -37,7 +37,7 @@ export default function Login() {
 
   return (
     <AuthWrapper>
-      <h2 style={ { textAlign: 'center' } }>Log In</h2>
+      <h2 style={ { textAlign: 'center' } }>Logowanie</h2>
       { error && <AlertMain
         type="danger">{ error }
       </AlertMain> }
@@ -51,21 +51,21 @@ export default function Login() {
         />
         <FormGroup
           id="password"
-          label="Password"
+          label="Hasło"
           type="password"
           required={ true }
           ref={ passwordRef }
         />
         <ButtonSubmit
-          label="Log In"
+          label="Zaloguj się"
           type="submit"
           loading={ loading }
         />
         { (loading) && <SpinnerLoading /> }
       </Form>
       <AuthHelperWrapper>
-        <div>Need an account? <Link to="/signup">Sign Up</Link></div>
-        <div>Forgot a password? <Link to="/forgot-password">Click here</Link></div>
+        <div>Nie masz konta? <Link to="/signup">Rejestracja</Link></div>
+        <div>Zapomniałeś hasła? <Link to="/forgot-password">Zmień hasło</Link></div>
       </AuthHelperWrapper>
     </AuthWrapper>
   )

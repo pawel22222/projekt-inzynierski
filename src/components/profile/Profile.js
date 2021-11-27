@@ -26,13 +26,13 @@ export default function Dashboard() {
         <>
             <Card>
                 <CardBody>
-                    <h1>Profile</h1>
+                    <h1>Twoje konto</h1>
                     <strong>Email: </strong>
                     { currentUser.email }
                     <div>
                         <Link to="/update-profile/security">
                             <Button
-                                label="Edit profile"
+                                label="Edytuj profil"
                                 type="button"
                                 color="secondary"
                             />
