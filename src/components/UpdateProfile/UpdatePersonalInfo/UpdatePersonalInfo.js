@@ -35,6 +35,7 @@ export default function UpdatePersonalInfo() {
 
         promises.push(
             db.collection("users").doc(currentUser.uid).set({
+                id: currentUser.uid,
                 name: nameRef.current.value,
                 lastName: lastNameRef.current.value,
                 displayName: displayNameRef.current.value,

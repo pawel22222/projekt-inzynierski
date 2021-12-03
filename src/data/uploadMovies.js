@@ -9,7 +9,7 @@ function uploadMovies() {
     moviesToUpload.forEach(movie => {
         promises.push(
             db.collection("movies").doc(movie.id.toString()).set({
-                id: movie.id,
+                id: movie.id.toString(),
                 title: movie.title,
                 desc: movie.desc,
                 genre: movie.genre,

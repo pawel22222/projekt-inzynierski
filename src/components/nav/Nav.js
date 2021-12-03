@@ -16,6 +16,7 @@ function Nav() {
         <NavDiv>
             <Link to="/"><LinkLabel>Strona główna</LinkLabel></Link>
             <Link to="/movies"><LinkLabel>Filmy</LinkLabel></Link>
+            <Link to="/statistic"><LinkLabel>Statystyki</LinkLabel></Link>
 
 
         </NavDiv>

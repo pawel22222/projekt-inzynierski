@@ -1,10 +1,17 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { db } from '../../firebase'
+import styled from 'styled-components'
 
 import Box from '@mui/material/Box'
 import Rating from '@mui/material/Rating'
 // import ButtonMain from '../UI/ButtonMain'
+
+//#region Styled components
+const StarRatingDiv = styled.div`
+    width: 100px;
+`
+//#endregion
 
 const StarRating = ({ movieId }) => {
     const [rating, setRating] = useState({ ratingValue: 0 })
@@ -95,7 +102,7 @@ const StarRating = ({ movieId }) => {
     // }
 
     return (
-        <>
+        <StarRatingDiv>
             <Box
                 sx={ {
                     '& > legend': { mt: 2 },
@@ -124,7 +131,7 @@ const StarRating = ({ movieId }) => {
                 type='button'
                 onClick={ removeRating(rating.ratingId) }
             /> */}
-        </>
+        </StarRatingDiv>
     )
 }
 

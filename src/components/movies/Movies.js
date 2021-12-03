@@ -58,7 +58,6 @@ function Movies() {
 			setLoading(true)
 
 			await db.collection('movies')
-				// .orderBy('title')
 				.orderBy('ratingCounter', 'desc')
 				.startAfter(lastDoc)
 				.limit(6)

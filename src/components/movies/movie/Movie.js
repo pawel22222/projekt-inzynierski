@@ -12,10 +12,16 @@ import StarRating from '../../starRating/StarRating'
 //#region Styled components
 const MovieDiv = styled.div`
     display: flex;
-
-`
+    @media(max-width:768px){
+        flex-flow: column;
+    }
+    
+    `
 const Poster = styled.img`
     width: 300px;
+    @media(max-width:768px){
+        width: 100%;
+    }
 `
 const Info = styled.div`
     padding: 5px;

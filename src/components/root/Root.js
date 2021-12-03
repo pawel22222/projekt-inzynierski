@@ -15,9 +15,9 @@ import Nav from '../nav/Nav'
 import Home from '../home/Home'
 import Movies from '../movies/Movies'
 import Movie from '../movies/movie/Movie'
+import Statistic from '../statistic/Statistic'
 
 function Root() {
-
   return (
     <div>
       <GlobalStyle />
@@ -38,6 +38,8 @@ function Root() {
               component={ () => <Movies /> }
             />
             <Route path="/movie/:movieId" component={ Movie }
+            />
+            <Route path="/statistic" component={ Statistic }
             />
           </Switch>
         </AuthProvider>
