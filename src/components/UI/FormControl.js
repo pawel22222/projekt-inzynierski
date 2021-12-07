@@ -5,7 +5,7 @@ import { forwardRef } from 'react'
 const FormGroup = styled.div`
     display: flex;
     flex-flow: column;
-    padding: 15px 0 5px;
+    padding: 0px 0 5px;
 `
 const Label = styled.label`
     font-weight: bold;

@@ -24,6 +24,10 @@ const Button = styled.button`
         background-color: #e43a3a;
         :hover { background-color: #d83434; }
     `}
+    ${({ color }) => color === 'green' && css`
+        background-color: #2ab607;
+        :hover { background-color: #27a807; }
+    `}
 `
 
 export default function ButtonMain({ label, type, loading, onClick, color }) {

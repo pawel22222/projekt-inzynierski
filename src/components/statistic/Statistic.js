@@ -4,51 +4,65 @@ import { db } from '../../firebase'
 import SpinnerLoading from '../UI/SpinnerLoading'
 import AlertMain from '../UI/AlertMain'
 import Table from './table/Table'
+import FilterStats from './filterStats/FilterStats'
 
 function Statistic() {
-    console.log('render component')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
 
     const [movies, setMovies] = useState([])
     const [ratings, setRatings] = useState([])
     const [users, setUsers] = useState([])
-    const [dataTable, setDataTable] = useState({
-        age1: [0, 0, 0, 0, 0],
-        age2: [0, 0, 0, 0, 0],
-        age3: [0, 0, 0, 0, 0],
-    })
 
+    const [dataTable, setDataTable] = useState([])
+    const [theoreticalDataTable, setTheoreticalDataTable] = useState([])
+
+    const [selectedGenre, setSelectedGenre] = useState('')
+    const [ageRanges, setAgeRanges] = useState([])
+
+    const currentYear = new Date().getFullYear()
 
     const preperData = () => {
-        let table = {
-            age1: [0, 0, 0, 0, 0],
-            age2: [0, 0, 0, 0, 0],
-            age3: [0, 0, 0, 0, 0],
-        }
-        let users1 = []
-        let users2 = []
-        let users3 = []
+        let table = ageRanges.map(el => [0, 0, 0, 0, 0])
+        let usersInRanges = ageRanges.map(el => [])
 
         users.forEach((user) => {
-            if (user.age < 2011 && user.age >= 2001) { users1.push(user.id) }
-            else if (user.age < 2001 && user.age >= 1991) { users2.push(user.id) }
-            else if (user.age < 1991 && user.age >= 1981) { users3.push(user.id) }
+            const userAge = -1 * (user.age - currentYear)
+
+            const index = ageRanges.findIndex(({ from, to }) =>
+                userAge >= from && userAge < to)
+
+            index >= 0 && usersInRanges[index].push(user.id)
         })
 
         ratings.forEach((rating) => {
-            if (users1.includes(rating.userId)) { table.age1[rating.ratingValue - 1]++ }
-            else if (users2.includes(rating.userId)) { table.age2[rating.ratingValue - 1]++ }
-            else if (users3.includes(rating.userId)) { table.age3[rating.ratingValue - 1]++ }
+            const index = usersInRanges.findIndex(arr =>
+                arr.includes(rating.userId))
+
+            index >= 0 && table[index][rating.ratingValue - 1]++
         })
 
         setDataTable(table)
 
-        console.log(`-------------------`)
-        console.log(`oceny > 1 2 3 4 5`)
-        console.log(`10-20 | ${table.age1}`)
-        console.log(`20-30 | ${table.age2}`)
-        console.log(`30-40 | ${table.age3}`)
+        let sumRow = table.map(arr =>
+            arr.reduce((acc, el) => acc + el))
+
+        let sumCol = table.reduce((acc, arr) => {
+            arr.forEach((el, i) => {
+                acc[i] = (acc[i] || 0) + el
+            })
+            return acc
+        }, [])
+
+        let sumAll = sumRow.reduce((acc, el) => acc + el)
+
+        let table2 = table.map((arr, i) =>
+            arr.map((el, j) =>
+                el = sumRow[i] * sumCol[j] / sumAll
+            )
+        )
+
+        setTheoreticalDataTable(table2)
     }
 
     useEffect(() => {
@@ -68,8 +82,6 @@ function Statistic() {
                         })
 
                         setMovies(moviesOfGenre)
-                        console.log('fetchMovies')
-                        console.log(moviesOfGenre)
                     })
             } catch (error) {
                 setError(`Failed to fetch movies data. ${error}`)
@@ -78,8 +90,8 @@ function Statistic() {
             setLoading(false)
         }
 
-        fetchMovies('Akcja')
-    }, [])
+        selectedGenre && fetchMovies(selectedGenre)
+    }, [selectedGenre])
 
     useEffect(() => {
         const fetchRating = async (movies) => {
@@ -99,8 +111,6 @@ function Statistic() {
                         })
 
                         setRatings(ratingsOfGenre)
-                        console.log('fetchRating')
-                        console.log(ratingsOfGenre)
                     })
             } catch (error) {
                 setError(`Failed to fetch ratings data. ${error}`)
@@ -117,27 +127,36 @@ function Statistic() {
             setLoading(true)
             setError('')
 
-            const userIds = ratings.map(el => el.userId)
+            return new Promise(() => {
+                let batches = []
 
-            try {
-                userIds.length && db.collection('users')
-                    .where('id', 'in', userIds)
-                    .get()
-                    .then(querySnapshot => {
-                        let usersArr = []
-                        querySnapshot.forEach(doc => {
-                            usersArr.push(doc.data())
+                const userIds = [...new Set(ratings.map(el => el.userId))]
+
+                while (userIds.length) {
+                    const batch = userIds.splice(0, 10)
+
+                    batches.push(
+                        new Promise(response => {
+                            try {
+                                db.collection('users')
+                                    .where('id', 'in', [...batch])
+                                    .get()
+                                    .then(results =>
+                                        response(results.docs.map(result => ({ ...result.data() }))))
+                            } catch (error) {
+                                setError(`Failed to fetch users data. ${error}`)
+                            }
                         })
+                    )
+                }
 
-                        setUsers(usersArr)
-                        console.log('fetchUsers')
-                        console.log(usersArr)
-                    })
-            } catch (error) {
-                setError(`Failed to fetch users data. ${error}`)
-            }
+                Promise.all(batches).then(content => {
+                    setUsers(content.flat())
+                })
 
-            setLoading(false)
+                setLoading(false)
+            })
+
         }
 
         ratings.length && fetchUsers(ratings)
@@ -145,22 +164,35 @@ function Statistic() {
 
     useEffect(() => {
         users.length && preperData()
-    }, [users])
+    }, [users, ageRanges])
 
     return (
         <div>
+            <FilterStats
+                setSelectedGenre={ setSelectedGenre }
+                setAgeRanges={ setAgeRanges }
+            />
+
             { error && <AlertMain type="danger">{ error }</AlertMain> }
             { (loading) && <SpinnerLoading /> }
 
-            {/* <div>ocena |1 2 3 4 5</div>
-            <div>10-20 |{ dataTable.age1.map(el => ` ${el} `) }</div>
-            <div>20-30 |{ dataTable.age2.map(el => ` ${el} `) }</div>
-            <div>30-40 |{ dataTable.age3.map(el => ` ${el} `) }</div> */}
+            <div className="container-md">
+                {
+                    !!dataTable.length && <Table
+                        header={ `Tabela 1. Ilość ocen użytkowników w przedziałach wiekowych. Gatunek: ${selectedGenre}` }
+                        dataTable={ dataTable }
+                        ageRanges={ ageRanges }
+                    />
+                }
 
-            <Table
-                header='Tabela 1. Ilość ocen użytkowników w przedziałach wiekowych. Gatunek: akcja'
-                dataTable={ dataTable }
-            />
+                {
+                    !!theoreticalDataTable.length && <Table
+                        header={ `Tabela 2. Teoretyczne ilości ocen użytkowników w przedziałach wiekowych.` }
+                        dataTable={ theoreticalDataTable }
+                        ageRanges={ ageRanges }
+                    />
+                }
+            </div>
         </div>
     )
 }

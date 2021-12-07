@@ -1,36 +1,46 @@
 import React from 'react'
 
-function Table({ dataTable, header }) {
+function Table({ dataTable, header, ageRanges }) {
+    const ratingValues = [1, 2, 3, 4, 5]
+
     return (
         <div>
             <h1>{ header }</h1>
-            <table border="2" cellpadding="10">
+            <table
+                className="table table-striped border"
+            >
+                <thead>
+                    <tr className="text-center">
+                        <td></td>
+                        <td colSpan='5'>Oceny</td>
+                    </tr>
+                    <tr>
+                        <td>Przedziały wiekowe</td>
+                        {
+                            ratingValues.map(el =>
+                                <td key={ el }>{ el }</td>)
+                        }
+                    </tr>
+                </thead>
                 <tbody>
-                    <font size="5">
-                        <tr>
-                            <td rowSpan="2"><b>Wiek</b></td>
-                            <td colSpan="5"><b>Oceny</b></td>
-                        </tr>
-                        <tr>
-                            <td><b>1</b></td>
-                            <td><b>2</b></td>
-                            <td><b>3</b></td>
-                            <td><b>4</b></td>
-                            <td><b>5</b></td>
-                        </tr>
-                        <tr>
-                            <td><b>10-20</b></td>
-                            { dataTable.age1.map(el => <td>{ el }</td>) }
-                        </tr>
-                        <tr>
-                            <td><b>20-30</b></td>
-                            { dataTable.age2.map(el => <td>{ el }</td>) }
-                        </tr>
-                        <tr>
-                            <td><b>30-40</b></td>
-                            { dataTable.age3.map(el => <td>{ el }</td>) }
-                        </tr>
-                    </font>
+                    {
+                        dataTable.map((array, index) =>
+                            <tr key={ index }>
+
+                                <th scope="row">{ `${ageRanges[index].from}-${ageRanges[index].to}` }</th>
+                                {
+                                    array.map((el, i) =>
+                                        <td key={ i + 4 }>
+                                            {
+                                                el % 1 === 0
+                                                    ? el
+                                                    : el.toFixed(2)
+                                            }
+                                        </td>)
+                                }
+                            </tr>
+                        )
+                    }
                 </tbody>
             </table>
         </div>
