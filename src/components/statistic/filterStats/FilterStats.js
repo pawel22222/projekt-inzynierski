@@ -5,15 +5,28 @@ import Button from '../../UI/ButtonMain'
 import Alert from '../../UI/AlertMain'
 import AgeRange from './ageRange/AgeRange'
 
+//#region Styled components
 const FilterDiv = styled.div`
     width: 100%;
     background-color: #aaaaaa;
     padding: 5px;
+    margin-bottom: 20px;
 `
+const Select = styled.select`
+    height: 35px;
+    border-radius: 5px;
+    border: 2px solid #cdcdcd;
+    margin-left:5px;
+`
+//#endregion
 
-function FilterStats({ setSelectedGenre, setAgeRanges }) {
+function FilterStats({
+    setSelectedGenre,
+    setAgeRanges,
+    errorFilter,
+    setErrorFilter
+}) {
     const genres = ['Akcja', 'Przygodowy', 'Animowany', 'Komedia', 'Kryminał', 'Dokumentalny', 'Dramat', 'Familijny', 'Fantasy', 'Historyczny', 'Horror', 'Muzyczny', 'Romans', 'Science Fiction', 'Thriller', 'Wojenny', 'Western']
-
 
     const inputGenreRef = useRef(null)
 
@@ -21,7 +34,21 @@ function FilterStats({ setSelectedGenre, setAgeRanges }) {
     const rangeToRefs = useRef([])
 
     const [rangeCounter, setRangeCounter] = useState(1)
-    const [error, setError] = useState('')
+
+    const validateInputs = (array) => {
+        setErrorFilter('')
+        array.forEach(({ from, to }, i) => {
+            if (
+                from > to
+                || from > 150 || from < 1
+                || to > 150 || to < 1
+            ) {
+                setErrorFilter(`Niepoprawne dane w ${i + 1} przedziale`)
+            }
+        })
+
+        return true
+    }
 
     const handleSubmit = () => {
         setSelectedGenre(inputGenreRef.current.value)
@@ -34,36 +61,42 @@ function FilterStats({ setSelectedGenre, setAgeRanges }) {
                 }
             })
 
-        setAgeRanges(ranges)
+        if (validateInputs(ranges)) {
+            setAgeRanges(ranges)
+        }
     }
 
     const displayAlert = (error) => {
-        setError(error)
-        setTimeout(() => setError(''), 4000)
+        setErrorFilter(error)
+        setTimeout(() => setErrorFilter(''), 4000)
     }
 
     const handleAddRange = () => {
-        rangeCounter < 5
+        const maxRange = 7
+        rangeCounter < maxRange
             ? setRangeCounter(rangeCounter + 1)
-            : displayAlert('Maksymalnie 5 przedziałów')
+            : displayAlert(`Maksymalnie ${maxRange} przedziałów`)
     }
 
     const handleRemoveRange = () => {
         rangeCounter > 1
             ? setRangeCounter(rangeCounter - 1)
             : displayAlert('Wymagany jest 1 przedział')
-
     }
 
     return (
         <FilterDiv>
             <div>
-                <label htmlFor="genre">Wybierz kategorie</label>
-                <select name="genre" id="genre" ref={ inputGenreRef }>
+                <label htmlFor="genre">Wybierz kategorie: </label>
+                <Select
+                    name="genre"
+                    id="genre"
+                    ref={ inputGenreRef }
+                >
                     { genres.map(genre =>
                         <option key={ genre } value={ genre }>{ genre }</option>
                     ) }
-                </select>
+                </Select>
             </div>
 
             <div style={ { display: 'flex', width: '300px', padding: '5px 0' } }>
@@ -79,7 +112,7 @@ function FilterStats({ setSelectedGenre, setAgeRanges }) {
                 />
             </div>
 
-            <div style={ { display: 'flex', alignItems: 'center' } }>
+            <div className='d-flex flex-wrap'>
                 { [...Array(rangeCounter)].map((el, index) =>
                     <AgeRange
                         ref={
@@ -98,18 +131,23 @@ function FilterStats({ setSelectedGenre, setAgeRanges }) {
                         rangeCounter={ rangeCounter }
                     />
                 ) }
-
-
             </div>
 
+            <div className="d-flex my-2">
+                <Button
+                    label='Generuj tabelę'
+                    color='primary'
+                    onClick={ handleSubmit }
+                />
 
-            <Button
-                label='Generuj tabelę'
-                color='primary'
-                onClick={ handleSubmit }
-            />
+                <Button
+                    label='Pobierz PDF'
+                    color='secondary'
+                    onClick={ () => 0 }
+                />
+            </div>
 
-            { error && <Alert type="danger" >{ error }</Alert> }
+            { errorFilter && <Alert type="danger" >{ errorFilter }</Alert> }
         </FilterDiv>
     )
 }

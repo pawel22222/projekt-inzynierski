@@ -16,8 +16,8 @@ const SpinnerLoading = styled.div`
   border-bottom: 2px solid grey;
   border-left: 4px solid black;
   background: transparent;
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
 `
 

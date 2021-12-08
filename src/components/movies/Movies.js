@@ -87,7 +87,7 @@ function Movies() {
 
 	return (
 		<>
-			<MovieCardsDiv>
+			<MovieCardsDiv >
 				{ error && <AlertMain type="danger">{ error }</AlertMain> }
 				{
 					movies.map(({

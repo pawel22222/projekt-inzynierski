@@ -19,8 +19,7 @@ const CardBody = styled.div`
     width: 400px;
 `
 export default function Dashboard() {
-    const { currentUser, userInfo } = useAuth()
-    console.log(userInfo)
+    const { currentUser } = useAuth()
 
     return (
         <>

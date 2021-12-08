@@ -12,6 +12,11 @@ import Button from '../../UI/ButtonMain'
 
 // #region Styled Components
 const Form = styled.form``
+const Select = styled.select`
+    height: 35px;
+    border-radius: 5px;
+    border: 2px solid #cdcdcd;
+`
 //#endregion
 
 export default function UpdatePersonalInfo() {
@@ -94,8 +99,8 @@ export default function UpdatePersonalInfo() {
                     defaultValue={ '' || userInfo?.age }
                 />
                 <label>Płeć</label>
-                <form id="sex">
-                    <select
+                <form id="sex" style={ { paddingBottom: '5px' } }>
+                    <Select
                         name="dropdown"
                         ref={ sexRef }
                         defaultValue={ '' || userInfo?.sex }
@@ -103,7 +108,7 @@ export default function UpdatePersonalInfo() {
                         <option value="" selected> -- </option>
                         <option value="male" >Mężczyzna</option>
                         <option value="famale">Kobieta</option>
-                    </select>
+                    </Select>
                 </form>
                 <Button
                     label="Aktualizuj profil"

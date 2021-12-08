@@ -9,20 +9,27 @@ import FilterStats from './filterStats/FilterStats'
 function Statistic() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const [errorFilter, setErrorFilter] = useState('')
 
     const [movies, setMovies] = useState([])
     const [ratings, setRatings] = useState([])
     const [users, setUsers] = useState([])
-
-    const [dataTable, setDataTable] = useState([])
-    const [theoreticalDataTable, setTheoreticalDataTable] = useState([])
 
     const [selectedGenre, setSelectedGenre] = useState('')
     const [ageRanges, setAgeRanges] = useState([])
 
     const currentYear = new Date().getFullYear()
 
+    const [dataTable, setDataTable] = useState([])
+    const [theoreticalDataTable, setTheoreticalDataTable] = useState([])
+    const [chiSquare, setChiSquare] = useState(0)
+    const [tCzuprow, setTCzuprow] = useState(0)
+    const [vCramera, setVCramera] = useState(0)
+
     const preperData = () => {
+        setLoading(true)
+        setError('')
+
         let table = ageRanges.map(el => [0, 0, 0, 0, 0])
         let usersInRanges = ageRanges.map(el => [])
 
@@ -41,28 +48,65 @@ function Statistic() {
 
             index >= 0 && table[index][rating.ratingValue - 1]++
         })
-
         setDataTable(table)
 
-        let sumRow = table.map(arr =>
+        const sumRow = table.map(arr =>
             arr.reduce((acc, el) => acc + el))
 
-        let sumCol = table.reduce((acc, arr) => {
+        const sumCol = table.reduce((acc, arr) => {
             arr.forEach((el, i) => {
                 acc[i] = (acc[i] || 0) + el
             })
             return acc
         }, [])
 
-        let sumAll = sumRow.reduce((acc, el) => acc + el)
+        const sumAll = sumRow.reduce((acc, el) => acc + el)
 
-        let table2 = table.map((arr, i) =>
+        const table2 = table.map((arr, i) =>
             arr.map((el, j) =>
                 el = sumRow[i] * sumCol[j] / sumAll
             )
         )
-
         setTheoreticalDataTable(table2)
+
+        // const fakeArray = [
+        //     [100, 70],
+        //     [130, 200],
+        // ]
+
+        // const fakeArray2 = [
+        //     [78.2, 91.8],
+        //     [151.8, 178.2],
+        // ]
+
+        const calcChiSquare = table.reduce((acc, arr, i) => {
+            return acc = acc + arr.reduce((acc2, el, j) => {
+                return table2[i][j] === 0
+                    ? acc2 = acc2 + 0
+                    : acc2 = acc2 + (((el - table2[i][j]) ** 2) / table2[i][j])
+            }, 0)
+        }, 0)
+        setChiSquare(calcChiSquare)
+
+        const calcTCzuprow = Math.sqrt(
+            calcChiSquare / (
+                sumAll * Math.sqrt((sumCol.length - 1) * (sumRow.length - 1))
+            )
+        )
+        setTCzuprow(calcTCzuprow)
+
+        const calcVCramera = Math.sqrt(
+            calcChiSquare / (
+                sumAll * Math.sqrt(
+                    (sumCol.length - 1) <= (sumRow.length - 1)
+                        ? (sumCol.length - 1)
+                        : (sumRow.length - 1)
+                )
+            )
+        )
+        setVCramera(calcVCramera)
+
+        setLoading(false)
     }
 
     useEffect(() => {
@@ -81,13 +125,14 @@ function Statistic() {
                             moviesOfGenre.push(doc.data())
                         })
 
-                        setMovies(moviesOfGenre)
+                        moviesOfGenre.length
+                            ? setMovies(moviesOfGenre)
+                            : setError('Brak danych')
                     })
             } catch (error) {
                 setError(`Failed to fetch movies data. ${error}`)
+                setLoading(false)
             }
-
-            setLoading(false)
         }
 
         selectedGenre && fetchMovies(selectedGenre)
@@ -95,8 +140,8 @@ function Statistic() {
 
     useEffect(() => {
         const fetchRating = async (movies) => {
-            setLoading(true)
             setError('')
+            setLoading(true)
 
             const movieIds = movies.map(el => el.id.toString())
 
@@ -114,9 +159,8 @@ function Statistic() {
                     })
             } catch (error) {
                 setError(`Failed to fetch ratings data. ${error}`)
+                setLoading(false)
             }
-
-            setLoading(false)
         }
 
         movies.length && fetchRating(movies)
@@ -124,8 +168,8 @@ function Statistic() {
 
     useEffect(() => {
         const fetchUsers = (ratings) => {
-            setLoading(true)
             setError('')
+            setLoading(true)
 
             return new Promise(() => {
                 let batches = []
@@ -145,6 +189,7 @@ function Statistic() {
                                         response(results.docs.map(result => ({ ...result.data() }))))
                             } catch (error) {
                                 setError(`Failed to fetch users data. ${error}`)
+                                setLoading(false)
                             }
                         })
                     )
@@ -153,8 +198,6 @@ function Statistic() {
                 Promise.all(batches).then(content => {
                     setUsers(content.flat())
                 })
-
-                setLoading(false)
             })
 
         }
@@ -163,7 +206,7 @@ function Statistic() {
     }, [ratings])
 
     useEffect(() => {
-        users.length && preperData()
+        users.length && ageRanges.length && preperData()
     }, [users, ageRanges])
 
     return (
@@ -171,28 +214,52 @@ function Statistic() {
             <FilterStats
                 setSelectedGenre={ setSelectedGenre }
                 setAgeRanges={ setAgeRanges }
+                errorFilter={ errorFilter }
+                setErrorFilter={ setErrorFilter }
             />
+            <div className="container">
+                { error && <AlertMain type="danger">{ error }</AlertMain> }
+                { (loading) && <SpinnerLoading /> }
+            </div>
 
-            { error && <AlertMain type="danger">{ error }</AlertMain> }
-            { (loading) && <SpinnerLoading /> }
-
-            <div className="container-md">
-                {
-                    !!dataTable.length && <Table
-                        header={ `Tabela 1. Ilość ocen użytkowników w przedziałach wiekowych. Gatunek: ${selectedGenre}` }
+            {
+                !loading
+                && error.length === 0
+                && errorFilter.length === 0
+                && dataTable.length > 0
+                && <div className="container-md">
+                    <Table
+                        header={ `Tabela 1. Liczebność ocen użytkowników w przedziałach wiekowych. Gatunek: ${selectedGenre}` }
                         dataTable={ dataTable }
                         ageRanges={ ageRanges }
                     />
-                }
 
-                {
-                    !!theoreticalDataTable.length && <Table
-                        header={ `Tabela 2. Teoretyczne ilości ocen użytkowników w przedziałach wiekowych.` }
+                    <div className="my-5"></div>
+
+                    <Table
+                        header={ `Tabela 2. Oczekiwana (teoretyczna) liczebność ocen użytkowników w przedziałach wiekowych.` }
                         dataTable={ theoreticalDataTable }
                         ageRanges={ ageRanges }
                     />
-                }
-            </div>
+
+                    <div className="my-5">
+                        {
+                            [
+                                { el: chiSquare, header: 'Wartość statystyki chi kwadrat: ' },
+                                { el: tCzuprow, header: 'Współczynnik zbieżności T-Czuprowa: ' },
+                                { el: vCramera, header: 'Współczynnik V-Cramera: ' }
+                            ].map(({ el, header }, i) => (
+                                <h2 key={ i }>
+                                    { header }
+                                    <b>
+                                        { el.toFixed(2) }
+                                    </b>
+                                </h2>
+                            ))
+                        }
+                    </div>
+                </div>
+            }
         </div>
     )
 }

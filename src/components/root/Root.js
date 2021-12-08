@@ -26,6 +26,7 @@ function Root() {
         <AuthProvider>
           <Header />
           <Nav />
+
           <Switch>
             <Route path="/" exact component={ Home } />
             <PrivateRoute path="/profile" component={ Profile } />

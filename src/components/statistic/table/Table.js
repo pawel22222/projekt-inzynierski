@@ -7,18 +7,18 @@ function Table({ dataTable, header, ageRanges }) {
         <div>
             <h1>{ header }</h1>
             <table
-                className="table table-striped border"
+                className="table table-striped border border-secondary"
             >
                 <thead>
-                    <tr className="text-center">
+                    <tr className="text-center ">
                         <td></td>
-                        <td colSpan='5'>Oceny</td>
+                        <td colSpan='5'><b>Oceny</b></td>
                     </tr>
                     <tr>
-                        <td>Przedziały wiekowe</td>
+                        <td><b>Przedziały wiekowe</b></td>
                         {
                             ratingValues.map(el =>
-                                <td key={ el }>{ el }</td>)
+                                <td key={ el }><b>{ el }</b></td>)
                         }
                     </tr>
                 </thead>

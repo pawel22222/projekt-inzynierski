@@ -16,7 +16,7 @@ const MovieDiv = styled.div`
         flex-flow: column;
     }
     
-    `
+`
 const Poster = styled.img`
     width: 300px;
     @media(max-width:768px){
@@ -58,39 +58,41 @@ function Movie() {
     }, [movieId])
 
     return (
-        <MovieDiv>
-            { error && <AlertMain type="danger">{ error }</AlertMain> }
-            { (loading) && <SpinnerLoading /> }
+        <div className="container">
+            <MovieDiv>
+                { error && <AlertMain type="danger">{ error }</AlertMain> }
+                { (loading) && <SpinnerLoading /> }
 
-            { (Object.entries(movieDisplayPage).length > 0) ? (
-                <>
-                    <Poster
-                        src={ `https://image.tmdb.org/t/p/w500/${movieDisplayPage.poster}` }
-                        alt={ movieDisplayPage.title }
-                    />
-                    <Info>
-                        <h1>{ movieDisplayPage.title + ' (' + movieDisplayPage.id + ')' }</h1>
-                        <p>{ `Data wydania: ${movieDisplayPage.release_date}` }</p>
-                        <p>{ `Średnia ocen:
+                { (Object.entries(movieDisplayPage).length > 0) ? (
+                    <>
+                        <Poster
+                            src={ `https://image.tmdb.org/t/p/w500/${movieDisplayPage.poster}` }
+                            alt={ movieDisplayPage.title }
+                        />
+                        <Info>
+                            <h1>{ movieDisplayPage.title + ' (' + movieDisplayPage.id + ')' }</h1>
+                            <p>{ `Data wydania: ${movieDisplayPage.release_date}` }</p>
+                            <p>{ `Średnia ocen:
                             ${movieDisplayPage.averageRatings.toFixed(2)} / 5
                             (${movieDisplayPage.ratingCounter})` }
-                        </p>
-                        {
-                            (currentUser)
-                                ? <>
-                                    <h3>Twoja ocena:</h3>
-                                    <StarRating movieId={ movieId } />
-                                </>
-                                : <Link to="/login">Zaloguj się, aby ocenić</Link>
-                        }
-                        <p>{ `Kategorie: ${mapGenres(movieDisplayPage.genre)}` }</p>
-                        { movieDisplayPage.desc }
-                    </Info>
-                </>
-            ) : (
-                <div></div>
-            ) }
-        </MovieDiv>
+                            </p>
+                            {
+                                (currentUser)
+                                    ? <>
+                                        <h3>Twoja ocena:</h3>
+                                        <StarRating movieId={ movieId } />
+                                    </>
+                                    : <Link to="/login">Zaloguj się, aby ocenić</Link>
+                            }
+                            <p>{ `Kategorie: ${mapGenres(movieDisplayPage.genre)}` }</p>
+                            { movieDisplayPage.desc }
+                        </Info>
+                    </>
+                ) : (
+                    <div></div>
+                ) }
+            </MovieDiv>
+        </div>
     )
 }
 

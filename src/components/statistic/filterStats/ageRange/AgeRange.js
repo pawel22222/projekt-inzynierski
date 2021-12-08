@@ -18,7 +18,7 @@ const AgeRange = forwardRef(({ nr }, ref) => {
                 placeholder='Od'
                 type='number'
                 ref={ fromRef }
-                min='18'
+                min='1'
                 max='150'
                 step='1'
             />
@@ -28,7 +28,7 @@ const AgeRange = forwardRef(({ nr }, ref) => {
                 placeholder='Do'
                 type='number'
                 ref={ toRef }
-                min='18'
+                min='1'
                 max='150'
                 step='1'
             />
