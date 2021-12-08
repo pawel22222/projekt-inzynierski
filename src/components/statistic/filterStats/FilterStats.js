@@ -42,8 +42,16 @@ function FilterStats({
                 from > to
                 || from > 150 || from < 1
                 || to > 150 || to < 1
+                || (i > 0 ? from < array[i - 1].to : false)
             ) {
-                setErrorFilter(`Niepoprawne dane w ${i + 1} przedziale`)
+                setErrorFilter({
+                    header: `Niepoprawne dane w ${i + 1} przedziale`,
+                    desc: `
+                        -tylko wartości 1-150 \n
+                        -granica dolna przedziału musi być mniejsza od górnej granicy  \n
+                        -przedziały nie mogą nakładać się na siebie \n
+                        -przedziały należy wprowadzać rosnąco \n
+                `})
             }
         })
 
@@ -147,7 +155,13 @@ function FilterStats({
                 />
             </div>
 
-            { errorFilter && <Alert type="danger" >{ errorFilter }</Alert> }
+            {
+                errorFilter &&
+                <Alert
+                    type="danger"
+                    header={ errorFilter.header }
+                    desc={ errorFilter.desc }
+                /> }
         </FilterDiv>
     )
 }

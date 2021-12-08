@@ -7,7 +7,7 @@ import AuthWrapper from '../wrappers/AuthWrapper'
 import AuthHelperWrapper from '../wrappers/AuthHelperWrapper'
 import FormGroup from '../UI/FormControl'
 import ButtonSubmit from '../UI/ButtonMain'
-import AlertMain from '../UI/AlertMain'
+import Alert from '../UI/AlertMain'
 import SpinnerLoading from '../UI/SpinnerLoading'
 
 // #region Styled Components
@@ -38,9 +38,7 @@ export default function Login() {
   return (
     <AuthWrapper>
       <h2 style={ { textAlign: 'center' } }>Logowanie</h2>
-      { error && <AlertMain
-        type="danger">{ error }
-      </AlertMain> }
+      { error && <Alert type="danger" desc={ error } /> }
       <Form onSubmit={ handleSubmit }>
         <FormGroup
           id="email"

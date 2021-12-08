@@ -27,7 +27,9 @@ function Table({ dataTable, header, ageRanges }) {
                         dataTable.map((array, index) =>
                             <tr key={ index }>
 
-                                <th scope="row">{ `${ageRanges[index].from}-${ageRanges[index].to}` }</th>
+                                <th scope="row">
+                                    { `${ageRanges[index].from}-${ageRanges[index].to}` }
+                                </th>
                                 {
                                     array.map((el, i) =>
                                         <td key={ i + 4 }>

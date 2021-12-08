@@ -55,12 +55,8 @@ export default function UpdateSecurity() {
     return (
         <>
             <h2>Zabezpieczenia</h2>
-            { error && <Alert
-                type="danger">{ error }
-            </Alert> }
-            { success && <Alert
-                type="success">{ success }
-            </Alert> }
+            { error && <Alert type="danger" desc={ error } /> }
+            { success && <Alert type="success" desc={ success } /> }
             <Form onSubmit={ handleSubmit }>
                 <FormGroup
                     id="email"

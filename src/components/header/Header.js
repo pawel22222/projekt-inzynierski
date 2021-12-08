@@ -48,7 +48,7 @@ export default function Header() {
 
   return (
     <Container>
-      { error && <Alert type="danger" /> }
+      { error && <Alert type="danger" desc={ error } /> }
 
       <Searchbar />
 

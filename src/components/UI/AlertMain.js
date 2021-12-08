@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components'
 
-const AlertMain = styled.div`
+const AlertMainDiv = styled.div`
     background-color: #ebebeb;
     color: #a7a7a7;
     padding: 10px;
@@ -27,4 +27,15 @@ const AlertMain = styled.div`
         `
     }
 `
-export default AlertMain
+export default function AlertMain({ header, desc, type }) {
+
+    return (
+        <AlertMainDiv type={ type }>
+            <h2>{ header }</h2>
+            <div>{
+                desc.split('\n').map((el) =>
+                    <p key={ el }>{ el }</p>)
+            } </div>
+        </AlertMainDiv>
+    )
+}

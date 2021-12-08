@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { db } from '../../firebase'
 
-import AlertMain from '../UI/AlertMain'
+import Alert from '../UI/AlertMain'
 import SpinnerLoading from '../UI/SpinnerLoading'
 import Button from '../UI/ButtonMain'
 
@@ -88,7 +88,7 @@ function Movies() {
 	return (
 		<>
 			<MovieCardsDiv >
-				{ error && <AlertMain type="danger">{ error }</AlertMain> }
+				{ error && <Alert type="danger" desc={ error } /> }
 				{
 					movies.map(({
 						id,

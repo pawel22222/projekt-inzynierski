@@ -60,12 +60,8 @@ export default function UpdatePersonalInfo() {
         <>
             <h2>Dane</h2>
 
-            { error && <Alert
-                type="danger">{ error }
-            </Alert> }
-            { success && <Alert
-                type="success">{ success }
-            </Alert> }
+            { error && <Alert type="danger" desc={ error } /> }
+            { success && <Alert type="success" desc={ success } /> }
 
             <Form onSubmit={ handleSubmit }>
                 <FormGroup

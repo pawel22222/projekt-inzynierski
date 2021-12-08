@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { db } from '../../firebase'
 
 import SpinnerLoading from '../UI/SpinnerLoading'
-import AlertMain from '../UI/AlertMain'
+import Alert from '../UI/AlertMain'
 import Table from './table/Table'
 import FilterStats from './filterStats/FilterStats'
 
@@ -37,7 +37,7 @@ function Statistic() {
             const userAge = -1 * (user.age - currentYear)
 
             const index = ageRanges.findIndex(({ from, to }) =>
-                userAge >= from && userAge < to)
+                userAge >= from && userAge <= to)
 
             index >= 0 && usersInRanges[index].push(user.id)
         })
@@ -139,28 +139,39 @@ function Statistic() {
     }, [selectedGenre])
 
     useEffect(() => {
-        const fetchRating = async (movies) => {
+        const fetchRating = (movies) => {
             setError('')
             setLoading(true)
 
-            const movieIds = movies.map(el => el.id.toString())
+            return new Promise(() => {
+                let batches = []
 
-            try {
-                movieIds.length && await db.collection('ratings')
-                    .where('movieId', 'in', movieIds)
-                    .get()
-                    .then(querySnapshot => {
-                        let ratingsOfGenre = []
-                        querySnapshot.forEach(doc => {
-                            ratingsOfGenre.push(doc.data())
+                const movieIds = [...new Set(movies.map(el => el.id.toString()))]
+
+                while (movieIds.length) {
+                    const batch = movieIds.splice(0, 10)
+
+                    batches.push(
+                        new Promise(response => {
+                            try {
+                                db.collection('ratings')
+                                    .where('movieId', 'in', [...batch])
+                                    .get()
+                                    .then(results =>
+                                        response(results.docs.map(result => ({ ...result.data() })))
+                                    )
+                            } catch (error) {
+                                setError(`Failed to fetch users data. ${error}`)
+                                setLoading(false)
+                            }
                         })
+                    )
+                }
 
-                        setRatings(ratingsOfGenre)
-                    })
-            } catch (error) {
-                setError(`Failed to fetch ratings data. ${error}`)
-                setLoading(false)
-            }
+                Promise.all(batches).then(content => {
+                    setRatings(content.flat())
+                })
+            })
         }
 
         movies.length && fetchRating(movies)
@@ -186,7 +197,8 @@ function Statistic() {
                                     .where('id', 'in', [...batch])
                                     .get()
                                     .then(results =>
-                                        response(results.docs.map(result => ({ ...result.data() }))))
+                                        response(results.docs.map(result => ({ ...result.data() })))
+                                    )
                             } catch (error) {
                                 setError(`Failed to fetch users data. ${error}`)
                                 setLoading(false)
@@ -218,7 +230,7 @@ function Statistic() {
                 setErrorFilter={ setErrorFilter }
             />
             <div className="container">
-                { error && <AlertMain type="danger">{ error }</AlertMain> }
+                { error && <Alert type="danger" desc={ error } /> }
                 { (loading) && <SpinnerLoading /> }
             </div>
 
@@ -252,7 +264,8 @@ function Statistic() {
                                 <h2 key={ i }>
                                     { header }
                                     <b>
-                                        { el.toFixed(2) }
+                                        { el.toFixed(2)
+                                        }
                                     </b>
                                 </h2>
                             ))

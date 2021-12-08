@@ -5,7 +5,7 @@ import { getMovieById } from '../../../data/getMovies'
 import { useAuth } from '../../../context/AuthContext'
 import { Link } from 'react-router-dom'
 
-import AlertMain from '../../UI/AlertMain'
+import Alert from '../../UI/AlertMain'
 import SpinnerLoading from '../../UI/SpinnerLoading'
 import StarRating from '../../starRating/StarRating'
 
@@ -60,7 +60,7 @@ function Movie() {
     return (
         <div className="container">
             <MovieDiv>
-                { error && <AlertMain type="danger">{ error }</AlertMain> }
+                { error && <Alert type="danger" desc={ error } /> }
                 { (loading) && <SpinnerLoading /> }
 
                 { (Object.entries(movieDisplayPage).length > 0) ? (
