@@ -3,7 +3,7 @@ import { db } from '../firebase'
 
 
 function uploadMovies() {
-    const moviesToUpload = allMovies.slice(0, 200)
+    const moviesToUpload = allMovies
     const promises = []
 
     moviesToUpload.forEach(movie => {

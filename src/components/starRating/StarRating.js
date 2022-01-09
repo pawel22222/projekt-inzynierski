@@ -92,15 +92,6 @@ const StarRating = ({ movieId }) => {
         })
     }
 
-    // const removeRating = (id) => {
-    //     db.collection("ratings")
-    //         .doc(id)
-    //         .delete()
-    //         .then(() => {
-    //             console.log("Document successfully deleted!")
-    //         })
-    // }
-
     return (
         <StarRatingDiv>
             <Box
@@ -125,12 +116,6 @@ const StarRating = ({ movieId }) => {
                     } }
                 />
             </Box>
-            {/* <ButtonMain
-                label='Usuń ocenę'
-                color='danger'
-                type='button'
-                onClick={ removeRating(rating.ratingId) }
-            /> */}
         </StarRatingDiv>
     )
 }

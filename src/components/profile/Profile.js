@@ -4,6 +4,7 @@ import styled from 'styled-components'
 
 // Components
 import Button from '../UI/ButtonMain'
+import RecentlyRatedMovies from './recentlyRatedMovies/RecentlyRatedMovies'
 
 const Card = styled.div`
     width: 100%;
@@ -26,8 +27,8 @@ export default function Dashboard() {
             <Card>
                 <CardBody>
                     <h1>Twoje konto</h1>
-                    <strong>Email: </strong>
-                    { currentUser.email }
+                    { 'Email: ' }
+                    <strong>{ currentUser.email }</strong>
                     <div>
                         <Link to="/update-profile/security">
                             <Button
@@ -38,6 +39,8 @@ export default function Dashboard() {
                         </Link>
                     </div>
                 </CardBody>
+
+                {/* <RecentlyRatedMovies /> */ }
             </Card>
         </>
     )

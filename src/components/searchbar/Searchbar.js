@@ -17,10 +17,16 @@ const Input = styled.input`
     width: 70%;
     border-radius: 5px;
     border: 2px solid #cdcdcd;
+    background-color: #e4e4e4;
+    &:focus{
+        outline:3px #868686 solid ;
+    }
 `
 const SearchResults = styled.div`
-    background-color: gray;
+    background-color: #c0c0c0;
     width: 70%;
+    border:2px solid gray;
+    border-top: none;
     border-radius: 5px;
 `
 //#endregion
@@ -64,14 +70,16 @@ function Searchbar() {
             <Input
                 type='search'
                 ref={ inputRef }
-                placeholder="Szukaj.."
+                placeholder="Szukaj filmu.."
                 value={ input }
                 onChange={ (e) => setInput(firstCharToUpper(e.target.value)) }
                 onBlur={ () => setTimeout(() => setDisplaySearchbarResult(false), 100) }
                 onFocus={ () => setDisplaySearchbarResult(true) }
             />
             {
-                displaySearchbarResult && <SearchResults>
+                displaySearchbarResult
+                && !!searchedMovies.length
+                && <SearchResults>
                     {
                         searchedMovies.map(movie => {
                             return (

@@ -12,6 +12,13 @@ import SpinnerLoading from '../UI/SpinnerLoading'
 
 // #region Styled Components
 const Form = styled.form``
+const NavLink = styled(Link)`
+    text-decoration: none;
+    color: #7998ff;
+    :hover{
+        text-decoration: none;
+    }
+`
 //#endregion
 
 export default function SignUp() {
@@ -77,9 +84,9 @@ export default function SignUp() {
           { (loading) && <SpinnerLoading /> }
         </Form>
         <AuthHelperWrapper>
-          Masz już konto? <Link
+          Masz już konto? <NavLink
             to="/login">Zaloguj się
-          </Link>
+          </NavLink>
         </AuthHelperWrapper>
       </AuthWrapper>
     </>

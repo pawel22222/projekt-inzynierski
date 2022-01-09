@@ -12,14 +12,13 @@ const Container = styled.div`
   height: 100px;
   width: 100%;
   padding: 5px;
-  background-color: #b4b4b4;
+  background-color: #f8f8f8;
   display: flex;
-  /* align-items: center; */
   `
 const AccountDiv = styled.div`
+  text-align:center;
   display: flex;
   flex-flow: column;
-  align-items: center;
   min-width: 150px;
   `
 //#endregion
@@ -43,7 +42,6 @@ export default function Header() {
     if (userInfo?.name || userInfo?.displayName)
       return `Witaj  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`
     else if (currentUser) return `Hi ${currentUser.email.split('@')[0]}`
-    // else return `Witaj`
   }
 
   return (

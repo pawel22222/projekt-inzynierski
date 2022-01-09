@@ -12,6 +12,13 @@ import SpinnerLoading from '../UI/SpinnerLoading'
 
 // #region Styled Components
 const Form = styled.form``
+const NavLink = styled(Link)`
+    text-decoration: none;
+    color: #7998ff;
+    :hover{
+        text-decoration: none;
+    }
+`
 //#endregion
 
 export default function ForgotPassword() {
@@ -58,7 +65,7 @@ export default function ForgotPassword() {
         </Form>
         <AuthHelperWrapper>
           <div>
-            Nie masz konta? <Link to="/signup">Stwórz konto</Link>
+            Nie masz konta? <NavLink to="/signup">Stwórz konto</NavLink>
           </div>
         </AuthHelperWrapper>
       </AuthWrapper>

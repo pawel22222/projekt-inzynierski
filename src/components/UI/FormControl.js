@@ -6,15 +6,18 @@ const FormGroup = styled.div`
     display: flex;
     flex-flow: column;
     padding: 0px 0 5px;
-`
+    `
 const Label = styled.label`
     font-weight: bold;
     margin-bottom: 5px;
-`
+    `
 const Input = styled.input`
     height: 35px;
     border-radius: 5px;
     border: 2px solid #cdcdcd;
+    &:focus{
+        outline:3px #868686 solid ;
+    }
 `
 
 const FormControl = forwardRef(

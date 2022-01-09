@@ -16,6 +16,7 @@ import Home from '../home/Home'
 import Movies from '../movies/Movies'
 import Movie from '../movies/movie/Movie'
 import Statistic from '../statistic/Statistic'
+import Footer from '../footer/Footer'
 
 function Root() {
   return (
@@ -28,21 +29,20 @@ function Root() {
           <Nav />
 
           <Switch>
-            <Route path="/" exact component={ Home } />
-            <PrivateRoute path="/profile" component={ Profile } />
-            <PrivateRoute path="/update-profile" component={ UpdateProfile } />
-            <Route path="/signup" component={ SignUp } />
-            <Route path="/login" component={ Login } />
-            <Route path="/forgot-password" component={ ForgotPassword } />
-            <Route
-              path="/movies"
-              component={ () => <Movies /> }
-            />
-            <Route path="/movie/:movieId" component={ Movie }
-            />
-            <Route path="/statistic" component={ Statistic }
-            />
+            <main style={ { minHeight: 'calc(100vh - 210px)' } }>
+              <Route path="/" exact component={ Home } />
+              <PrivateRoute path="/profile" component={ Profile } />
+              <PrivateRoute path="/update-profile" component={ UpdateProfile } />
+              <Route path="/signup" component={ SignUp } />
+              <Route path="/login" component={ Login } />
+              <Route path="/forgot-password" component={ ForgotPassword } />
+              <Route path="/movies" component={ () => <Movies /> } />
+              <Route path="/movie/:movieId" component={ Movie } />
+              <PrivateRoute path="/statistic" component={ Statistic } />
+            </main>
           </Switch>
+
+          <Footer />
         </AuthProvider>
       </Router>
     </div>

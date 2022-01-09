@@ -10,8 +10,16 @@ import ButtonSubmit from '../UI/ButtonMain'
 import Alert from '../UI/AlertMain'
 import SpinnerLoading from '../UI/SpinnerLoading'
 
+
 // #region Styled Components
 const Form = styled.form``
+const NavLink = styled(Link)`
+    text-decoration: none;
+    color: #7998ff;
+    :hover{
+        text-decoration: none;
+    }
+`
 //#endregion
 
 export default function Login() {
@@ -62,8 +70,8 @@ export default function Login() {
         { (loading) && <SpinnerLoading /> }
       </Form>
       <AuthHelperWrapper>
-        <div>Nie masz konta? <Link to="/signup">Rejestracja</Link></div>
-        <div>Zapomniałeś hasła? <Link to="/forgot-password">Zmień hasło</Link></div>
+        <div>Nie masz konta? <NavLink to="/signup">Rejestracja</NavLink></div>
+        <div>Zapomniałeś hasła? <NavLink to="/forgot-password">Zmień hasło</NavLink></div>
       </AuthHelperWrapper>
     </AuthWrapper>
   )

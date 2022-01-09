@@ -69,12 +69,12 @@ function Statistic() {
         )
         setTheoreticalDataTable(table2)
 
-        // const fakeArray = [
+        // const example = [
         //     [100, 70],
         //     [130, 200],
         // ]
 
-        // const fakeArray2 = [
+        // const example2 = [
         //     [78.2, 91.8],
         //     [151.8, 178.2],
         // ]
@@ -231,7 +231,7 @@ function Statistic() {
             />
             <div className="container">
                 { error && <Alert type="danger" desc={ error } /> }
-                { (loading) && <SpinnerLoading /> }
+                { loading && <SpinnerLoading /> }
             </div>
 
             {
@@ -240,8 +240,13 @@ function Statistic() {
                 && errorFilter.length === 0
                 && dataTable.length > 0
                 && <div className="container-md">
+
+                    <h1 className="text-center mb-5">
+                        { 'Kategoria filmowa: ' + selectedGenre }
+                    </h1>
+
                     <Table
-                        header={ `Tabela 1. Liczebność ocen użytkowników w przedziałach wiekowych. Gatunek: ${selectedGenre}` }
+                        header={ `Tabela 1. Liczebność ocen użytkowników w przedziałach wiekowych. ` }
                         dataTable={ dataTable }
                         ageRanges={ ageRanges }
                     />
@@ -256,19 +261,15 @@ function Statistic() {
 
                     <div className="my-5">
                         {
-                            [
-                                { el: chiSquare, header: 'Wartość statystyki chi kwadrat: ' },
-                                { el: tCzuprow, header: 'Współczynnik zbieżności T-Czuprowa: ' },
-                                { el: vCramera, header: 'Współczynnik V-Cramera: ' }
-                            ].map(({ el, header }, i) => (
-                                <h2 key={ i }>
-                                    { header }
-                                    <b>
-                                        { el.toFixed(2)
-                                        }
-                                    </b>
-                                </h2>
-                            ))
+                            [{ value: chiSquare, header: 'Wartość statystyki chi kwadrat: ' },
+                            { value: tCzuprow, header: 'Współczynnik zbieżności T-Czuprowa: ' },
+                            { value: vCramera, header: 'Współczynnik V-Cramera: ' }]
+                                .map(({ value, header }, i) => (
+                                    <h2 key={ i }>
+                                        { header }
+                                        <b>{ value.toFixed(2) }</b>
+                                    </h2>
+                                ))
                         }
                     </div>
                 </div>

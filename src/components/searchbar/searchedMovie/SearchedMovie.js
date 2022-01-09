@@ -4,23 +4,28 @@ import { Link } from 'react-router-dom'
 
 //#region Styled components
 const StyledLink = styled(Link)`
-    width: 100%;
     height: 100px;
     display: flex;
     margin: 5px;
-    `
+`
 const Poster = styled.img`
-    /* width: 200px; */
-    `
+    border-radius: 5px 0 0 5px;
+`
 const Info = styled.div`
     padding: 5px;
     color: black;
-    `
+    text-decoration: underline #c0c0c0;
+    border-radius: 0 5px 5px 0;
+    &:hover{
+        background-color: #a3a3a3;
+        text-decoration: underline #a3a3a3;
+    }
+`
 //#endregion
 
 function SearchedMovie({ id, title, genre, desc, poster, release_date }) {
-    const mapDate = (date) => `(${date.slice(0, 4)})`
-    const mapDesc = (date) => `${date.slice(0, 150)}...`
+    const sliceDate = (date) => `(${date.slice(0, 4)})`
+    const sliceDesc = (date) => `${date.slice(0, 150)}...`
 
     return (
         <StyledLink to={ `/movie/${id}` }>
@@ -29,8 +34,8 @@ function SearchedMovie({ id, title, genre, desc, poster, release_date }) {
                 alt={ title }
             />
             <Info>
-                <h3>{ `${title} ${mapDate(release_date)}` }</h3>
-                <h5>{ mapDesc(desc) }</h5>
+                <h3>{ `${title} ${sliceDate(release_date)}` }</h3>
+                <h5>{ sliceDesc(desc) }</h5>
             </Info>
         </StyledLink>
     )

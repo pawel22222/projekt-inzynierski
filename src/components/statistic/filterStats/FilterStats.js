@@ -4,19 +4,16 @@ import styled from 'styled-components'
 import Button from '../../UI/ButtonMain'
 import Alert from '../../UI/AlertMain'
 import AgeRange from './ageRange/AgeRange'
+import Select from '../../UI/SelectInput'
 
 //#region Styled components
 const FilterDiv = styled.div`
     width: 100%;
-    background-color: #aaaaaa;
+    background-color: #c7c7c7;
     padding: 5px;
     margin-bottom: 20px;
-`
-const Select = styled.select`
-    height: 35px;
-    border-radius: 5px;
-    border: 2px solid #cdcdcd;
-    margin-left:5px;
+    border-top: 3px solid #868686;
+    border-bottom: 3px solid #868686;
 `
 //#endregion
 
@@ -48,9 +45,9 @@ function FilterStats({
                     header: `Niepoprawne dane w ${i + 1} przedziale`,
                     desc: `
                         -tylko wartości 1-150 \n
-                        -granica dolna przedziału musi być mniejsza od górnej granicy  \n
-                        -przedziały nie mogą nakładać się na siebie \n
                         -przedziały należy wprowadzać rosnąco \n
+                        -dolna granica przedziału nie może być większa od górnej granicy  \n
+                        -przedziały nie mogą nakładać się na siebie \n
                 `})
             }
         })
@@ -64,8 +61,8 @@ function FilterStats({
         const ranges = [...Array(rangeCounter)]
             .map((el, i) => {
                 return {
-                    from: rangeFromRefs.current[i].value,
-                    to: rangeToRefs.current[i].value,
+                    from: parseInt(rangeFromRefs.current[i].value),
+                    to: parseInt(rangeToRefs.current[i].value),
                 }
             })
 
@@ -75,7 +72,7 @@ function FilterStats({
     }
 
     const displayAlert = (error) => {
-        setErrorFilter(error)
+        setErrorFilter({ header: error })
         setTimeout(() => setErrorFilter(''), 4000)
     }
 
@@ -95,16 +92,12 @@ function FilterStats({
     return (
         <FilterDiv>
             <div>
-                <label htmlFor="genre">Wybierz kategorie: </label>
                 <Select
+                    lable="Wybierz kategorie: "
                     name="genre"
-                    id="genre"
                     ref={ inputGenreRef }
-                >
-                    { genres.map(genre =>
-                        <option key={ genre } value={ genre }>{ genre }</option>
-                    ) }
-                </Select>
+                    options={ genres }
+                />
             </div>
 
             <div style={ { display: 'flex', width: '300px', padding: '5px 0' } }>

@@ -1,13 +1,9 @@
 import React from 'react'
 
-
 function Home() {
-
-
-
     return (
         <div>
-            Aplikacja polecająca filmy.
+            Projekt iżynierski
         </div>
     )
 }

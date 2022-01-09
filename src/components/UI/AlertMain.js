@@ -6,7 +6,7 @@ const AlertMainDiv = styled.div`
     padding: 10px;
     border: 1px solid #a7a7a7;
     border-radius: 5px;
-    
+    word-break: break-all;
     
     ${({ type }) => type === 'danger' && css`
         background-color: #f89c9c;
@@ -33,7 +33,7 @@ export default function AlertMain({ header, desc, type }) {
         <AlertMainDiv type={ type }>
             <h2>{ header }</h2>
             <div>{
-                desc.split('\n').map((el) =>
+                desc && desc.split('\n').map((el) =>
                     <p key={ el }>{ el }</p>)
             } </div>
         </AlertMainDiv>
