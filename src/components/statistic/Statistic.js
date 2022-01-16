@@ -69,16 +69,6 @@ function Statistic() {
         )
         setTheoreticalDataTable(table2)
 
-        // const example = [
-        //     [100, 70],
-        //     [130, 200],
-        // ]
-
-        // const example2 = [
-        //     [78.2, 91.8],
-        //     [151.8, 178.2],
-        // ]
-
         const calcChiSquare = table.reduce((acc, arr, i) => {
             return acc = acc + arr.reduce((acc2, el, j) => {
                 return table2[i][j] === 0

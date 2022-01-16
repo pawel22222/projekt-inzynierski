@@ -27,6 +27,7 @@ function Nav() {
             <NavLink to="/"><LinkLabel>Strona główna</LinkLabel></NavLink>
             <NavLink to="/movies"><LinkLabel>Filmy</LinkLabel></NavLink>
             { !!currentUser && <NavLink to="/statistic"><LinkLabel>Statystyki</LinkLabel></NavLink> }
+            { !!currentUser && <NavLink to="/recomended-movies"><LinkLabel>Polecane filmy</LinkLabel></NavLink> }
         </NavDiv>
     )
 }

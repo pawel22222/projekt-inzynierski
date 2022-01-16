@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import GlobalStyle from '../../theme/GlobalStyle'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import { AuthProvider } from '../../context/AuthContext'
@@ -16,9 +17,12 @@ import Home from '../home/Home'
 import Movies from '../movies/Movies'
 import Movie from '../movies/movie/Movie'
 import Statistic from '../statistic/Statistic'
+import RecomendedMovies from '../recommendedMovies/RecomendedMovies'
 import Footer from '../footer/Footer'
 
 function Root() {
+  const [movies, setMovies] = useState([])
+
   return (
     <div>
       <GlobalStyle />
@@ -27,7 +31,6 @@ function Root() {
         <AuthProvider>
           <Header />
           <Nav />
-
           <Switch>
             <main style={ { minHeight: 'calc(100vh - 210px)' } }>
               <Route path="/" exact component={ Home } />
@@ -39,10 +42,9 @@ function Root() {
               <Route path="/movies" component={ () => <Movies /> } />
               <Route path="/movie/:movieId" component={ Movie } />
               <PrivateRoute path="/statistic" component={ Statistic } />
+              <PrivateRoute path="/recomended-movies" component={ RecomendedMovies } />
             </main>
           </Switch>
-
-          <Footer />
         </AuthProvider>
       </Router>
     </div>
