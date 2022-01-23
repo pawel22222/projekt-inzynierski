@@ -13,20 +13,28 @@ import StarRating from '../../starRating/StarRating'
 
 //#region Styled components
 const MovieDiv = styled.div`
-    display: flex;
+    margin-top: 10px;
     @media(max-width:768px){
+        display: flex;
         flex-flow: column;
+        margin-top: 0;
+    }
+    @media(max-width:576){
+        margin-top: 0;
     }
 `
 const Poster = styled.img`
+    float: left;
     width: 300px;
-    @media(max-width:768px){
+    height: 100%;
+    margin-right: 10px;
+    @media(max-width: 768px){
         width: 100%;
     }
 `
 const Info = styled.div`
     padding: 5px;
-
+    text-align: justify;
 `
 //#endregion
 
@@ -39,6 +47,34 @@ function Movie() {
     const [userRating, setUserRating] = useState(0)
 
     const joinGenres = (genres) => genres.join(', ')
+
+    function toStringAverageRating({ averageRatings, ratingCounter }) {
+        return `${averageRatings.toFixed(2)} / 5 (${ratingCounter})`
+    }
+
+    const removeRating = async () => {
+        await db.collection("ratings")
+            .doc(userRating.ratingId)
+            .delete()
+            .then(() => {
+                console.log("Document successfully deleted!")
+            }).catch((error) => {
+                setError(`Error removing document: (${error})`)
+            })
+
+        const counter = movieDisplayPage.ratingCounter
+        const average = movieDisplayPage.averageRatings
+
+        await db.collection("movies").doc(movieId).set({
+            ...movieDisplayPage,
+            ratingCounter: counter - 1,
+            averageRatings: counter - 1 === 0
+                ? 0
+                : (average * counter - userRating.ratingValue) / (counter - 1)
+        })
+
+        window.location.reload()
+    }
 
     useEffect(() => {
         const getMovie = async (id) => {
@@ -76,77 +112,56 @@ function Movie() {
                     }
                 })
         }
+
         getUserRate()
     }, [])
 
-    const removeRating = async () => {
-        await db.collection("ratings")
-            .doc(userRating.ratingId)
-            .delete()
-            .then(() => {
-                console.log("Document successfully deleted!")
-            }).catch((error) => {
-                console.error("Error removing document: ", error)
-            })
-
-        const counter = movieDisplayPage.ratingCounter
-        const average = movieDisplayPage.averageRatings
-
-        db.collection("movies").doc(movieId).set({
-            ...movieDisplayPage,
-            ratingCounter: counter - 1,
-            averageRatings: ((average * counter - userRating) / (counter - 1))
-                ? ((average * counter - userRating) / (counter - 1))
-                : 0
-        })
-        await window.location.reload()
-    }
-
     return (
-        <div className="container">
-            <MovieDiv>
-                { error && <Alert type="danger" desc={ error } /> }
-                { (loading) && <SpinnerLoading /> }
+        <MovieDiv className="container">
+            { error && <Alert type="danger" desc={ error } /> }
+            { (loading) && <SpinnerLoading /> }
 
-                { (Object.entries(movieDisplayPage).length > 0) ? (
-                    <>
-                        <Poster
-                            src={ `https://image.tmdb.org/t/p/w500/${movieDisplayPage.poster}` }
-                            alt={ movieDisplayPage.title }
-                        />
-                        <Info>
-                            <h1>{ movieDisplayPage.title + ' (' + movieDisplayPage.id + ')' }</h1>
-                            <p>{ `Data wydania: ${movieDisplayPage.release_date}` }</p>
-                            <p>{ `Średnia ocen:
-                            ${movieDisplayPage.averageRatings.toFixed(2)} / 5
-                            (${movieDisplayPage.ratingCounter})` }
-                            </p>
-                            {
-                                (currentUser)
-                                    ? <>
-                                        <h3>Twoja ocena:</h3>
-                                        <StarRating movieId={ movieId } />
-                                        { !!userRating.ratingValue &&
-                                            <div style={ { width: '140px' } }>
-                                                <Button
-                                                    label="Usuń ocenę"
-                                                    type='submit'
-                                                    color="danger"
-                                                    onClick={ removeRating }
-                                                />
-                                            </div> }
-                                    </>
-                                    : <Link to="/login">Zaloguj się, aby ocenić</Link>
-                            }
-                            <p>{ `Kategorie: ${joinGenres(movieDisplayPage.genre)}` }</p>
-                            { movieDisplayPage.desc }
-                        </Info>
-                    </>
-                ) : (
-                    <div></div>
-                ) }
-            </MovieDiv>
-        </div>
+            { movieDisplayPage
+                && <>
+                    <Poster
+                        src={ `https://image.tmdb.org/t/p/w500/${movieDisplayPage.poster}` }
+                        alt={ movieDisplayPage.title }
+                    />
+
+                    <Info>
+                        <h1>{ movieDisplayPage.title }</h1>
+
+                        <p>Data wydania: { movieDisplayPage.release_date }</p>
+
+                        <p>Kategorie: { joinGenres(movieDisplayPage.genre) }</p>
+
+                        <p>Średnia ocen: { toStringAverageRating(movieDisplayPage) }</p>
+
+                        { currentUser
+                            ? <>
+                                <h3 className='mb-3'>Twoja ocena:</h3>
+
+                                <StarRating movieId={ movieId } />
+
+                                { !!userRating.ratingValue &&
+                                    <div style={ { width: '150px', display: 'flex' } }>
+                                        <Button
+                                            label="Usuń ocenę"
+                                            type='submit'
+                                            color="danger"
+                                            onClick={ removeRating }
+                                        />
+                                    </div>
+                                }
+                            </>
+                            : <Link to="/login">Zaloguj się, aby ocenić</Link>
+                        }
+
+                        <p>{ movieDisplayPage.desc }</p>
+                    </Info>
+                </>
+            }
+        </MovieDiv>
     )
 }
 

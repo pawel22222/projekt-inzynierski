@@ -14,9 +14,12 @@ const Label = styled.label`
 const Input = styled.input`
     height: 35px;
     border-radius: 5px;
-    border: 2px solid #cdcdcd;
+    border: 2px solid #7998ff;
     &:focus{
-        outline:3px #868686 solid ;
+        outline: 2px #7998ff solid ;
+    }
+    &::placeholder{
+        color: #7998ff;
     }
 `
 

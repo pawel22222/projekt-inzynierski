@@ -2,8 +2,8 @@ const ColoredLine = ({ color, height }) => {
     return (
         <hr
             style={ {
-                backgroundColor: color ? color : '#d1d1d1',
-                height: height ? height : '1px',
+                backgroundColor: color ? color : '#7998ff',
+                height: height ? height : '2px',
             } }
         />
     )

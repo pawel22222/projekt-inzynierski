@@ -9,11 +9,10 @@ import Select from '../../UI/SelectInput'
 //#region Styled components
 const FilterDiv = styled.div`
     width: 100%;
-    background-color: #c7c7c7;
+    background-color: #e7edff;
     padding: 5px;
     margin-bottom: 20px;
-    border-top: 3px solid #868686;
-    border-bottom: 3px solid #868686;
+    border-top: 3px solid #7998ff;
 `
 //#endregion
 
@@ -32,7 +31,7 @@ function FilterStats({
 
     const [rangeCounter, setRangeCounter] = useState(1)
 
-    const validateInputs = (array) => {
+    function validateInputs(array) {
         setErrorFilter('')
         array.forEach(({ from, to }, i) => {
             if (
@@ -46,44 +45,49 @@ function FilterStats({
                     desc: `
                         -tylko wartości 1-150 \n
                         -przedziały należy wprowadzać rosnąco \n
-                        -dolna granica przedziału nie może być większa od górnej granicy  \n
+                        -dolna granica przedziału nie może być większa od górnej granicy \n
                         -przedziały nie mogą nakładać się na siebie \n
                 `})
+                return false
             }
         })
 
         return true
     }
 
-    const handleSubmit = () => {
-        setSelectedGenre(inputGenreRef.current.value)
-
-        const ranges = [...Array(rangeCounter)]
+    function getRanges(rangeCounter) {
+        return [...Array(rangeCounter)]
             .map((el, i) => {
                 return {
                     from: parseInt(rangeFromRefs.current[i].value),
                     to: parseInt(rangeToRefs.current[i].value),
                 }
             })
+    }
+
+    function handleSubmit() {
+        setSelectedGenre(inputGenreRef.current.value)
+
+        const ranges = getRanges(rangeCounter)
 
         if (validateInputs(ranges)) {
             setAgeRanges(ranges)
         }
     }
 
-    const displayAlert = (error) => {
+    function displayAlert(error) {
         setErrorFilter({ header: error })
         setTimeout(() => setErrorFilter(''), 4000)
     }
 
-    const handleAddRange = () => {
+    function handleAddRange() {
         const maxRange = 7
         rangeCounter < maxRange
             ? setRangeCounter(rangeCounter + 1)
             : displayAlert(`Maksymalnie ${maxRange} przedziałów`)
     }
 
-    const handleRemoveRange = () => {
+    function handleRemoveRange() {
         rangeCounter > 1
             ? setRangeCounter(rangeCounter - 1)
             : displayAlert('Wymagany jest 1 przedział')

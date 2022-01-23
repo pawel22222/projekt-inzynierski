@@ -7,7 +7,7 @@ const Card = styled.div`
     align-items: center;
 `
 const CardBody = styled.div`
-    border: 2px solid #d1d1d1;
+    border: 2px solid #7998ff;
     border-radius: 5px;
     padding: 10px;
     margin: 10px;

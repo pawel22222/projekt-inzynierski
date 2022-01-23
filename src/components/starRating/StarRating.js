@@ -1,17 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../../context/AuthContext'
 import { db } from '../../firebase'
-import styled from 'styled-components'
 
 import Box from '@mui/material/Box'
 import Rating from '@mui/material/Rating'
-// import ButtonMain from '../UI/ButtonMain'
-
-//#region Styled components
-const StarRatingDiv = styled.div`
-    width: 100px;
-`
-//#endregion
 
 const StarRating = ({ movieId }) => {
     const [rating, setRating] = useState({ ratingValue: 0 })
@@ -72,8 +64,8 @@ const StarRating = ({ movieId }) => {
             })
     }
 
-    const setUserRate = async (id, value) => {
-        await setMovieData(value)
+    const setUserRate = (id, value) => {
+        setMovieData(value)
 
         db.collection('ratings')
             .doc(id)
@@ -93,30 +85,21 @@ const StarRating = ({ movieId }) => {
     }
 
     return (
-        <StarRatingDiv>
-            <Box
-                sx={ {
-                    '& > legend': { mt: 2 },
-                } }
+        <Box>
+            <Rating
                 style={ {
-                    transform: 'scale(1.5)',
-                    position: 'relative',
-                    left: '25%',
-                    padding: '5px 0'
+                    transform: 'scale(1.5) translateX(15px)'
                 } }
-            >
-                <Rating
-                    name="simple-controlled"
-                    size="large"
-                    value={ rating.ratingValue }
-                    onChange={ (event, newRating) => {
-                        rating.ratingId
-                            ? setUserRate(rating.ratingId, newRating)
-                            : setUserRate(getRandom(), newRating)
-                    } }
-                />
-            </Box>
-        </StarRatingDiv>
+                name="simple-controlled"
+                size="large"
+                value={ rating.ratingValue }
+                onChange={ (event, newRating) => {
+                    rating.ratingId
+                        ? setUserRate(rating.ratingId, newRating)
+                        : setUserRate(getRandom(), newRating)
+                } }
+            />
+        </Box>
     )
 }
 

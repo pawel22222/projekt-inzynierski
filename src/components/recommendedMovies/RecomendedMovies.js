@@ -2,50 +2,41 @@ import { useEffect, useState } from 'react'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 
-import SpinnerLoading from '../UI/SpinnerLoading'
 import Alert from '../UI/AlertMain'
+import MovieRanking from './movieRanking/MovieRanking'
+import SkeletonLoading from './skeletonLoading/SkeletonLoading'
 
 function RecomendedMovies() {
-
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
+    const { userInfo } = useAuth()
+    const currentYear = new Date().getFullYear()
 
     const [movies, setMovies] = useState('')
     const [ratings, setRatings] = useState('')
     const [users, setUsers] = useState('')
+    const [movieRanking, setMovieRanking] = useState([])
 
-    const { userInfo } = useAuth()
-
-    const currentYear = new Date().getFullYear()
-
-    const sexes = [
-        'male', 'famale'
-    ].map(sex => {
-        return { sex: sex, ratingCounterForSex: 0, percentageValueForSex: 0 }
-    })
-
+    const sexes = ['male', 'famale']
     const ageRanges = [
-        { from: 10, to: 20 },
-        { from: 20, to: 30 },
-        { from: 30, to: 40 },
-    ].map(ageRange => {
-        return { ageRange: ageRange, ratingCounterForAgeRange: 0, percentageValueForAgeRange: 0 }
-    })
+        { from: 15, to: 21 },
+        { from: 21, to: 26 },
+        { from: 26, to: 35 },
+        { from: 35, to: 50 },
+        { from: 50, to: 70 },
+    ]
+    const genres = ['Akcja', 'Przygodowy', 'Animowany', 'Komedia', 'Kryminał', 'Dokumentalny', 'Dramat', 'Familijny', 'Fantasy', 'Historyczny', 'Horror', 'Muzyczny', 'Romans', 'Science Fiction', 'Thriller', 'Wojenny', 'Western']
 
-    const genres = ['Akcja', 'Przygodowy', 'Animowany', 'Komedia', 'Kryminał', 'Dokumentalny', 'Dramat', 'Familijny', 'Fantasy', 'Historyczny', 'Horror', 'Muzyczny', 'Romans', 'Science Fiction', 'Thriller', 'Wojenny', 'Western'].map(genre => {
-        return { genre: genre, ratingCounterForGenre: 0, percentageValueForGenre: 0 }
-    })
 
-    let ratingsTree = {}
 
     useEffect(() => {
         const fetchMovies = () => {
-            setLoading(true)
-            setError('')
-
             console.log('fetchMovies')
 
             try {
+                setLoading(true)
+                setError('')
+
                 db.collection('movies')
                     .where('ratingCounter', '>', 0)
                     .get()
@@ -61,10 +52,8 @@ function RecomendedMovies() {
                     })
             } catch (error) {
                 setError(`Failed to fetch movies data. ${error}`)
-                setLoading(false)
             }
 
-            setLoading(false)
         }
 
         fetchMovies()
@@ -72,12 +61,12 @@ function RecomendedMovies() {
 
     useEffect(() => {
         const fetchRating = (movies) => {
-            setError('')
-            setLoading(true)
-
             console.log('fetchRating')
 
             return new Promise(() => {
+                setError('')
+                setLoading(true)
+
                 let batches = []
 
                 const movieIds = [...new Set(movies.map(el => el.id.toString()))]
@@ -96,7 +85,6 @@ function RecomendedMovies() {
                                     )
                             } catch (error) {
                                 setError(`Failed to fetch users data. ${error}`)
-                                setLoading(false)
                             }
                         })
                     )
@@ -106,7 +94,6 @@ function RecomendedMovies() {
                     setRatings(content.flat())
                 })
 
-                setLoading(false)
             })
         }
 
@@ -115,12 +102,12 @@ function RecomendedMovies() {
 
     useEffect(() => {
         const fetchUsers = (ratings) => {
-            setError('')
-            setLoading(true)
-
             console.log('fetchUsers')
 
             return new Promise(() => {
+                setError('')
+                setLoading(true)
+
                 let batches = []
 
                 const userIds = [...new Set(ratings.map(el => el.userId))]
@@ -139,7 +126,6 @@ function RecomendedMovies() {
                                     )
                             } catch (error) {
                                 setError(`Failed to fetch users data. ${error}`)
-                                setLoading(false)
                             }
                         })
                     )
@@ -149,36 +135,55 @@ function RecomendedMovies() {
                     setUsers(content.flat())
                 })
 
-                setLoading(false)
             })
         }
 
         ratings.length && fetchUsers(ratings)
     }, [ratings])
 
+
     useEffect(() => {
-        const preperData = () => {
-            setLoading(true)
-            setError('')
+        function generateRatingsTree(sexesArr, ageRangesArr, genresArr) {
+            const sexes = sexesArr.map(sex => ({
+                sex: sex,
+                ratingCounterForSex: 0,
+                percentageValueForSex: 0
+            }))
 
-            console.log('preperData')
+            const ageRanges = ageRangesArr.map(ageRange => ({
+                ageRange: ageRange,
+                ratingCounterForAgeRange: 0,
+                percentageValueForAgeRange: 0
+            }))
 
-            // GENERATE RATINGS_TREE
-            ratingsTree.ratingCounter = 0
+            const genres = genresArr.map(genre => ({
+                genre: genre,
+                ratingCounterForGenre: 0,
+                percentageValueForGenre: 0
+            }))
+
+            const ratingsTree = { ratingCounter: 0 }
+
             ratingsTree.sexes = JSON.parse(JSON.stringify(sexes))
+
             ratingsTree.sexes.forEach(sex => {
                 sex.ageRanges = JSON.parse(JSON.stringify(ageRanges))
             })
+
             ratingsTree.sexes.forEach(sex => {
                 sex.ageRanges.forEach(ageRange => {
                     ageRange.genres = JSON.parse(JSON.stringify(genres))
                 })
             })
 
-            // FILL RATINGS: USER_DATA AND MOVIES_DATA
-            const ratingsWithUserDataAndGenres = ratings.map(rating => {
+            return ratingsTree
+        }
+
+        function updateRatingsWithUserDataAndGenres() {
+            return ratings.map(rating => {
                 const currentUser = users.find(user => user.id === rating.userId)
                 const currentMovie = movies.find(movie => movie.id === rating.movieId)
+
                 return {
                     ...rating,
                     userAge: -1 * (currentUser.age - currentYear),
@@ -186,8 +191,9 @@ function RecomendedMovies() {
                     movieGenres: currentMovie.genre
                 }
             })
+        }
 
-            // COUNT RATINGS IN RATINGS_TREE
+        function countRatingsInRatingsTree(ratingsWithUserDataAndGenres, ratingsTree) {
             ratingsWithUserDataAndGenres.forEach(rating => {
                 ratingsTree.ratingCounter++
 
@@ -203,8 +209,9 @@ function RecomendedMovies() {
                     }
                 })
             })
+        }
 
-            // CALC PERCENTAGE VALUES
+        function calcPercentageValues(ratingsTree) {
             ratingsTree.sexes.forEach(sex => {
                 sex.percentageValueForSex = sex.ratingCounterForSex / ratingsTree.ratingCounter
 
@@ -216,16 +223,10 @@ function RecomendedMovies() {
                     })
                 })
             })
+        }
 
-            console.log(ratingsTree)
-
-
-            // CALC PROBABILITY AND FIT_FACTOR
-            const probabilityOfGenres = ['Akcja', 'Przygodowy', 'Animowany', 'Komedia', 'Kryminał', 'Dokumentalny', 'Dramat', 'Familijny', 'Fantasy', 'Historyczny', 'Horror', 'Muzyczny', 'Romans', 'Science Fiction', 'Thriller', 'Wojenny', 'Western'].map(genre => {
-                return { genre: genre, probability: 0, fitFactor: 0 }
-            })
-
-            probabilityOfGenres.forEach(genreObj => {
+        function calcProbabilityOfGenres(genresWithProbabilityAndFitFactor, ratingsTree) {
+            genresWithProbabilityAndFitFactor.forEach(genreObj => {
                 let total = 0
 
                 ratingsTree.sexes.forEach(sex => {
@@ -242,13 +243,13 @@ function RecomendedMovies() {
 
                 genreObj.probability = total
             })
+        }
 
-            probabilityOfGenres.forEach(genreObj => {
+        function calcFitFactorOfGenres(genresWithProbabilityAndFitFactor, ratingsTree) {
+            genresWithProbabilityAndFitFactor.forEach(genreObj => {
                 const currentUserSex = ratingsTree.sexes.find(({ sex }) => sex === userInfo.sex)
-
                 const currentUserAge = -1 * (userInfo.age - currentYear)
                 const currentUserAgeRange = currentUserSex.ageRanges.find(({ ageRange }) => currentUserAge >= ageRange.from && currentUserAge < ageRange.to)
-
                 const currentGenre = currentUserAgeRange.genres.find(({ genre }) => genre === genreObj.genre)
 
                 if (genreObj.probability === 0) {
@@ -262,49 +263,73 @@ function RecomendedMovies() {
                 }
             })
 
-            probabilityOfGenres.sort((a, b) => b.fitFactor - a.fitFactor)
+            genresWithProbabilityAndFitFactor.sort((a, b) => b.fitFactor - a.fitFactor)
+        }
 
-            console.log(probabilityOfGenres)
+        function calcWeightedAverage(genreWithBiggestFitFactor) {
+            const moviesInGenres = Object.fromEntries(genres.map(genre => [genre, []]))
 
+            movies.forEach((movie) => {
+                movie.genre.forEach((genre) => {
+                    moviesInGenres[genre].push(movie)
+                })
+            })
 
+            const numberOfRatings = moviesInGenres[genreWithBiggestFitFactor].reduce((total, movie) => total += movie.ratingCounter, 0)
 
-            // Warning: Drugi etap - wybór kategorii do wyswietlenia
-            // movies.forEach((movie) => {
-            //     movie.genre.forEach((genre) => {
-            //         moviesInGenres[genre].push(movie)
-            //     })
-            // })
+            return moviesInGenres[genreWithBiggestFitFactor]
+                .map(movie => ({
+                    ...movie,
+                    weightedAverage: movie.averageRatings * movie.ratingCounter / numberOfRatings
+                }))
+        }
 
-            // const numberOfRatings = moviesInGenres.Akcja.reduce((total, movie) => {
-            //     return total += movie.ratingCounter
-            // }, 0)
+        const rankingProcess = () => {
+            console.log('rankingProcess')
 
-            // moviesInGenres.Akcja.forEach(movie =>
-            //     movie.weightedAverage = movie.averageRatings * movie.ratingCounter / numberOfRatings
-            // )
+            setLoading(true)
+            setError('')
 
-            // moviesInGenres.Akcja.sort((a, b) => b.weightedAverage - a.weightedAverage)
+            const ratingsTree = generateRatingsTree(sexes, ageRanges, genres)
+            const ratingsWithUserDataAndGenres = updateRatingsWithUserDataAndGenres()
 
+            countRatingsInRatingsTree(ratingsWithUserDataAndGenres, ratingsTree)
+
+            calcPercentageValues(ratingsTree)
+            console.log(ratingsTree)
+
+            const genresWithProbabilityAndFitFactor = genres.map(genre => {
+                return { genre: genre, probability: 0, fitFactor: 0 }
+            })
+
+            calcProbabilityOfGenres(genresWithProbabilityAndFitFactor, ratingsTree)
+
+            calcFitFactorOfGenres(genresWithProbabilityAndFitFactor, ratingsTree)
+            console.log(genresWithProbabilityAndFitFactor)
+
+            const genreWithBiggestFitFactor = genresWithProbabilityAndFitFactor[0].genre
+
+            const rankingOfMovies = calcWeightedAverage(genreWithBiggestFitFactor)
+
+            const sortedRanking = rankingOfMovies.sort((a, b) => b.weightedAverage - a.weightedAverage)
+            console.log(sortedRanking)
+
+            setMovieRanking(sortedRanking)
             setLoading(false)
         }
 
-        users.length && preperData()
+        users.length && rankingProcess()
     }, [users])
 
     return (
-        <div>
+        <div className='mt-3'>
             <div className="container">
                 { error && <Alert type="danger" desc={ error } /> }
-                { loading && <SpinnerLoading /> }
             </div>
-            {
-                !loading
-                && error.length === 0
-                && <div className="container-md">
 
-                </div>
-            }
+            { loading && <SkeletonLoading /> }
 
+            { !!movieRanking.length && !loading && <MovieRanking movies={ movieRanking } /> }
         </div>
     )
 }

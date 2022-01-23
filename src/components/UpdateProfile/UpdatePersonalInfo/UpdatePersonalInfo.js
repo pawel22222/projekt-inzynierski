@@ -15,7 +15,10 @@ const Form = styled.form``
 const Select = styled.select`
     height: 35px;
     border-radius: 5px;
-    border: 2px solid #cdcdcd;
+    border: 2px solid #7998ff;
+    &:focus{
+        outline: 2px #7998ff solid;
+    }
 `
 //#endregion
 
@@ -95,17 +98,17 @@ export default function UpdatePersonalInfo() {
                     defaultValue={ '' || userInfo?.age }
                 />
                 <label>Płeć</label>
-                <form id="sex" style={ { paddingBottom: '5px' } }>
+                <div id="sex" style={ { paddingBottom: '5px' } }>
                     <Select
                         name="dropdown"
                         ref={ sexRef }
                         defaultValue={ '' || userInfo?.sex }
                     >
-                        <option value="" selected> -- </option>
+                        <option value=""> -- </option>
                         <option value="male" >Mężczyzna</option>
                         <option value="famale">Kobieta</option>
                     </Select>
-                </form>
+                </div>
                 <Button
                     label="Aktualizuj profil"
                     type="submit"

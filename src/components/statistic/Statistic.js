@@ -24,80 +24,7 @@ function Statistic() {
     const [theoreticalDataTable, setTheoreticalDataTable] = useState([])
     const [chiSquare, setChiSquare] = useState(0)
     const [tCzuprow, setTCzuprow] = useState(0)
-    const [vCramera, setVCramera] = useState(0)
-
-    const preperData = () => {
-        setLoading(true)
-        setError('')
-
-        let table = ageRanges.map(el => [0, 0, 0, 0, 0])
-        let usersInRanges = ageRanges.map(el => [])
-
-        users.forEach((user) => {
-            const userAge = -1 * (user.age - currentYear)
-
-            const index = ageRanges.findIndex(({ from, to }) =>
-                userAge >= from && userAge <= to)
-
-            index >= 0 && usersInRanges[index].push(user.id)
-        })
-
-        ratings.forEach((rating) => {
-            const index = usersInRanges.findIndex(arr =>
-                arr.includes(rating.userId))
-
-            index >= 0 && table[index][rating.ratingValue - 1]++
-        })
-        setDataTable(table)
-
-        const sumRow = table.map(arr =>
-            arr.reduce((acc, el) => acc + el))
-
-        const sumCol = table.reduce((acc, arr) => {
-            arr.forEach((el, i) => {
-                acc[i] = (acc[i] || 0) + el
-            })
-            return acc
-        }, [])
-
-        const sumAll = sumRow.reduce((acc, el) => acc + el)
-
-        const table2 = table.map((arr, i) =>
-            arr.map((el, j) =>
-                el = sumRow[i] * sumCol[j] / sumAll
-            )
-        )
-        setTheoreticalDataTable(table2)
-
-        const calcChiSquare = table.reduce((acc, arr, i) => {
-            return acc = acc + arr.reduce((acc2, el, j) => {
-                return table2[i][j] === 0
-                    ? acc2 = acc2 + 0
-                    : acc2 = acc2 + (((el - table2[i][j]) ** 2) / table2[i][j])
-            }, 0)
-        }, 0)
-        setChiSquare(calcChiSquare)
-
-        const calcTCzuprow = Math.sqrt(
-            calcChiSquare / (
-                sumAll * Math.sqrt((sumCol.length - 1) * (sumRow.length - 1))
-            )
-        )
-        setTCzuprow(calcTCzuprow)
-
-        const calcVCramera = Math.sqrt(
-            calcChiSquare / (
-                sumAll * Math.sqrt(
-                    (sumCol.length - 1) <= (sumRow.length - 1)
-                        ? (sumCol.length - 1)
-                        : (sumRow.length - 1)
-                )
-            )
-        )
-        setVCramera(calcVCramera)
-
-        setLoading(false)
-    }
+    const [vCramer, setVCramer] = useState(0)
 
     useEffect(() => {
         const fetchMovies = (genre) => {
@@ -207,8 +134,117 @@ function Statistic() {
         ratings.length && fetchUsers(ratings)
     }, [ratings])
 
+    function assignUsersToAgeRanges() {
+        let usersInRanges = ageRanges.map(el => [])
+
+        users.forEach((user) => {
+            const userAge = -1 * (user.age - currentYear)
+
+            const ageRangeIndex = ageRanges.findIndex(({ from, to }) =>
+                userAge >= from && userAge <= to)
+
+            ageRangeIndex >= 0 && usersInRanges[ageRangeIndex].push(user.id)
+        })
+
+        return usersInRanges
+    }
+
+    function createTableOfValues(usersInRanges) {
+        let table = ageRanges.map(el => [0, 0, 0, 0, 0])
+
+        ratings.forEach((rating) => {
+            const index = usersInRanges.findIndex(arr =>
+                arr.includes(rating.userId))
+
+            index >= 0 && table[index][rating.ratingValue - 1]++
+        })
+
+        setDataTable(table)
+        return table
+    }
+
+    function calcSumValuesInRows(tableOfValues) {
+        return tableOfValues.map(arr => arr.reduce((acc, el) => acc + el))
+    }
+
+    function calcSumValuesInColumns(tableOfValues) {
+        return tableOfValues.reduce((acc, arr) => {
+            arr.forEach((el, i) => {
+                acc[i] = (acc[i] || 0) + el
+            })
+            return acc
+        }, [])
+    }
+
+    function calcSumAllValues(sumValuesInRows) {
+        return sumValuesInRows.reduce((acc, el) => acc + el)
+    }
+
+    function createTableOfTheoreticalValues(tableOfValues, sumValuesInRows, sumValuesInColumn, sumAllValues) {
+        return tableOfValues.map((arr, i) => {
+            return arr.map((el, j) => {
+                return el = sumValuesInRows[i] * sumValuesInColumn[j] / sumAllValues
+            })
+        })
+    }
+
+    function calcChiSquare(tableOfValues, tableOfTheoreticalValues) {
+        return tableOfValues.reduce((acc, arr, i) => {
+            return acc = acc + arr.reduce((acc2, el, j) => {
+                return tableOfTheoreticalValues[i][j] === 0
+                    ? acc2 = acc2 + 0
+                    : acc2 = acc2 + (((el - tableOfTheoreticalValues[i][j]) ** 2) / tableOfTheoreticalValues[i][j])
+            }, 0)
+        }, 0)
+    }
+
+    function calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
+        return Math.sqrt(chiSquare
+            / (sumAllValues * Math.sqrt((sumValuesInColumn.length - 1) * (sumValuesInRows.length - 1)))
+        )
+    }
+
+    function calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
+        return Math.sqrt(chiSquare
+            / (sumAllValues
+                * Math.sqrt(
+                    (sumValuesInColumn.length - 1) <= (sumValuesInRows.length - 1)
+                        ? (sumValuesInColumn.length - 1)
+                        : (sumValuesInRows.length - 1)
+                )
+            )
+        )
+    }
+
+    const processStatistic = () => {
+        setLoading(true)
+        setError('')
+
+        const usersInAgeRanges = assignUsersToAgeRanges()
+
+        const tableOfValues = createTableOfValues(usersInAgeRanges)
+
+        const sumValuesInRows = calcSumValuesInRows(tableOfValues)
+        const sumValuesInColumn = calcSumValuesInColumns(tableOfValues)
+        const sumAllValues = calcSumAllValues(sumValuesInRows)
+
+        const tableOfTheoreticalValues = createTableOfTheoreticalValues(tableOfValues, sumValuesInRows, sumValuesInColumn, sumAllValues)
+
+        const chiSquare = calcChiSquare(tableOfValues, tableOfTheoreticalValues)
+        const tCzuprow = calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues)
+        const vCramer = calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues)
+
+        setDataTable(tableOfValues)
+        setTheoreticalDataTable(tableOfTheoreticalValues)
+        setChiSquare(chiSquare)
+        setTCzuprow(tCzuprow)
+        setVCramer(vCramer)
+
+        setLoading(false)
+    }
+
     useEffect(() => {
-        users.length && ageRanges.length && preperData()
+        users.length && ageRanges.length && processStatistic()
     }, [users, ageRanges])
 
     return (
@@ -253,7 +289,7 @@ function Statistic() {
                         {
                             [{ value: chiSquare, header: 'Wartość statystyki chi kwadrat: ' },
                             { value: tCzuprow, header: 'Współczynnik zbieżności T-Czuprowa: ' },
-                            { value: vCramera, header: 'Współczynnik V-Cramera: ' }]
+                            { value: vCramer, header: 'Współczynnik V-Cramera: ' }]
                                 .map(({ value, header }, i) => (
                                     <h2 key={ i }>
                                         { header }

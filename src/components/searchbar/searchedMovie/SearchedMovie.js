@@ -7,25 +7,29 @@ const StyledLink = styled(Link)`
     height: 100px;
     display: flex;
     margin: 5px;
+    text-decoration: none;
+    :hover{
+        text-decoration: none;
+    }
 `
 const Poster = styled.img`
-    border-radius: 5px 0 0 5px;
+    border-radius: 5px;
 `
 const Info = styled.div`
     padding: 5px;
     color: black;
-    text-decoration: underline #c0c0c0;
+    width: 100%;
     border-radius: 0 5px 5px 0;
+    transition: background-color .3s ease;
     &:hover{
-        background-color: #a3a3a3;
-        text-decoration: underline #a3a3a3;
+        background-color: #c4d3ff;
     }
 `
 //#endregion
 
-function SearchedMovie({ id, title, genre, desc, poster, release_date }) {
-    const sliceDate = (date) => `(${date.slice(0, 4)})`
-    const sliceDesc = (date) => `${date.slice(0, 150)}...`
+function SearchedMovie({ id, title, desc, poster, release_date }) {
+    const titleWithDate = `${title} (${release_date.slice(0, 4)})`
+    const sliceDesc = `${desc.slice(0, 100)}...`
 
     return (
         <StyledLink to={ `/movie/${id}` }>
@@ -34,8 +38,8 @@ function SearchedMovie({ id, title, genre, desc, poster, release_date }) {
                 alt={ title }
             />
             <Info>
-                <h3>{ `${title} ${sliceDate(release_date)}` }</h3>
-                <h5>{ sliceDesc(desc) }</h5>
+                <h3>{ titleWithDate }</h3>
+                <h4>{ sliceDesc }</h4>
             </Info>
         </StyledLink>
     )

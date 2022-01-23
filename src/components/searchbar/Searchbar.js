@@ -6,7 +6,7 @@ import SearchedMovie from './searchedMovie/SearchedMovie'
 
 //#region Styled components
 const SearchbarDiv = styled.div`
-    z-index: 10;
+    z-index: 50;
     width: 100%;
     display: flex;
     flex-flow: column;
@@ -16,16 +16,18 @@ const Input = styled.input`
     height: 35px;
     width: 70%;
     border-radius: 5px;
-    border: 2px solid #cdcdcd;
-    background-color: #e4e4e4;
+    border: 2px solid #7998ff;
     &:focus{
-        outline:3px #868686 solid ;
+        outline: 3px #7998ff solid;
+    }
+    &::placeholder{
+        color: #7998ff;
     }
 `
 const SearchResults = styled.div`
-    background-color: #c0c0c0;
+    background-color: #e7edff;
     width: 70%;
-    border:2px solid gray;
+    border: 2px solid #7998ff;
     border-top: none;
     border-radius: 5px;
 `
@@ -36,7 +38,7 @@ function Searchbar() {
     const [searchedMovies, setSearchedMovies] = useState([])
     const inputRef = useRef(null)
 
-    const [displaySearchbarResult, setDisplaySearchbarResult] = useState(false)
+    const [searchbarResult, setSearchbarResult] = useState(false)
 
     useEffect(() => {
         const fetchMovies = async () => {
@@ -73,26 +75,24 @@ function Searchbar() {
                 placeholder="Szukaj filmu.."
                 value={ input }
                 onChange={ (e) => setInput(firstCharToUpper(e.target.value)) }
-                onBlur={ () => setTimeout(() => setDisplaySearchbarResult(false), 100) }
-                onFocus={ () => setDisplaySearchbarResult(true) }
+                onBlur={ () => setTimeout(() => setSearchbarResult(false), 100) }
+                onFocus={ () => setSearchbarResult(true) }
             />
             {
-                displaySearchbarResult
+                searchbarResult
                 && !!searchedMovies.length
                 && <SearchResults>
                     {
-                        searchedMovies.map(movie => {
-                            return (
-                                <SearchedMovie
-                                    key={ movie.title }
-                                    { ...movie }
-                                />
-                            )
-                        })
+                        searchedMovies.map(movie => (
+                            <SearchedMovie
+                                key={ movie.title }
+                                { ...movie }
+                            />
+                        ))
                     }
                 </SearchResults>
             }
-        </SearchbarDiv >
+        </SearchbarDiv>
     )
 }
 

@@ -4,11 +4,13 @@ import styled from 'styled-components'
 const Select = styled.select`
     height: 35px;
     border-radius: 5px;
-    border: 2px solid #cdcdcd;
+    border: 2px solid #7998ff;
     margin-left: 5px;
     &:focus{
-        outline:3px #868686 solid ;
+        outline: 2px #7998ff solid;
     }
+`
+const Option = styled.option`
 `
 
 const SelectInput = forwardRef(({ label, name, options }, ref) => {
@@ -21,7 +23,7 @@ const SelectInput = forwardRef(({ label, name, options }, ref) => {
                 ref={ ref }
             >
                 { options.map(option =>
-                    <option key={ option } value={ option }>{ option }</option>
+                    <Option key={ option } value={ option }>{ option }</Option>
                 ) }
             </Select>
         </>

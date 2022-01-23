@@ -12,15 +12,14 @@ const Container = styled.div`
   height: 100px;
   width: 100%;
   padding: 5px;
-  background-color: #f8f8f8;
   display: flex;
-  `
+`
 const AccountDiv = styled.div`
   text-align:center;
   display: flex;
   flex-flow: column;
   min-width: 150px;
-  `
+`
 //#endregion
 
 export default function Header() {
@@ -58,8 +57,10 @@ export default function Header() {
               <Button
                 label="Moje konto"
                 type="button"
+                color="primary"
               />
             </Link>
+
             <Button
               onClick={ handleLogOut }
               label="Wyloguj"

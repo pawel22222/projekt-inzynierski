@@ -1,65 +1,42 @@
 import { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
 import { db } from '../../firebase'
 
 import Alert from '../UI/AlertMain'
 import SpinnerLoading from '../UI/SpinnerLoading'
 import Button from '../UI/ButtonMain'
 import Select from '../UI/SelectInput'
-import ReusableMovies from '../reusableMovies/ReusableMovies'
+import MovieCard from './movieCard/MovieCard'
 
 //#region Styled components
 const MovieCardsDiv = styled.div`
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-gap: 2px;
+	grid-gap: 5px;
 	@media (min-width: 768px) {
 		grid-template-columns: 1fr 1fr;
 	}
   	@media (min-width: 992px) {
 		grid-template-columns: 1fr 1fr 1fr ;
 	}
-  	@media (min-width: 1200px) {
-		grid-template-columns: 1fr 1fr 1fr 1fr ;
-	}
 `
-const MovieInfo = styled.div`
-    background-color: #b4b4b457;
-    padding: 10px 15px;
-    width: 100%;
-    text-align: center;
-    transition: .5s;
-    user-select: none;
-    font-size: 1.2em;
-	`
-const Movie = styled.div`
-    background-image: url(${({ img }) => img});
-	background-size: cover;
-	background-position: center;
-	height: 300px;
-	display: flex;
-	align-items: flex-end;
-	transition: .5s;
-    &:hover ${MovieInfo} {
-        background-color: #b4b4b4a6;
-		color: black;
-		text-decoration: underline black;
-  }
-`
-const StyledLink = styled(Link)`
-   text-decoration: none;
-    color: black;
-`
+
 const SeeMoreDiv = styled.div`
    	width: 300px;
 	margin: 10px auto;
 	display: flex;
 `
 const FilterDiv = styled.div`
-	background-color: #c7c7c7;
-	border-top: 3px solid #868686;
-    border-bottom: 3px solid #868686;
+	display: flex;
+	align-items: center;
+	padding: 5px;
+	background-color: #e7edff;
+	border-top: 2px solid #7998ff;
+`
+const SelectDiv = styled.div`
+	display: flex;
+	flex-flow: column;
+	align-items: flex-end;
 `
 
 //#endregion
@@ -129,75 +106,42 @@ function Movies() {
 	return (
 		<>
 			<FilterDiv>
-				<Select
-					label="Wybierz kategorie: "
-					name="genre"
-					ref={ inputGenreRef }
-					options={ genres }
-				/>
+				<SelectDiv>
+					<Select
+						label="Wybierz kategorie"
+						name="genre"
+						ref={ inputGenreRef }
+						options={ genres }
+					/>
+				</SelectDiv>
 
-				<Button
-					label="Szukaj"
-					color='primary'
-					onClick={ () => handleSearch() }
-				/>
+				<div style={ { width: '150px', marginLeft: '5px' } }>
+					<Button
+						label="Szukaj"
+						color='primary'
+						onClick={ () => handleSearch() }
+					/>
+				</div>
 			</FilterDiv>
 
 			{ error && <Alert type="danger" desc={ error } /> }
 
-			<ReusableMovies movies={ movies } />
+			<MovieCardsDiv className='container mt-2'>
+				{ error && <Alert type="danger" desc={ error } /> }
+
+				{ movies.map(movie => <MovieCard key={ movie.id } { ...movie } />) }
+			</MovieCardsDiv>
 
 			{ errorNoMovies && <Alert type='danger' header={ errorNoMovies.header } /> }
 
 			<SeeMoreDiv>
 				{ (loading) && <SpinnerLoading /> }
+
 				<Button
 					onClick={ () => fetchMovies(selectedGenre) }
 					label="Zobacz więcej.."
 				/>
 			</SeeMoreDiv>
-
-			{/* <div name="container p-0">
-				<MovieCardsDiv >
-					{ error && <Alert type="danger" desc={ error } /> }
-					{
-						movies.map(({
-							id,
-							title,
-							desc,
-							genre,
-							language,
-							release_date,
-							backdrop,
-							poster }) => (
-							<StyledLink
-								to={ `/movie/${id}` }
-								key={ id }
-							>
-								<Movie
-									img={ `https://image.tmdb.org/t/p/w500/${backdrop}` }
-								>
-									<MovieInfo>
-										<div>{ `${title} (${dateToYear(release_date)})` }</div>
-										<div>{ joinGenres(genre) }</div>
-									</MovieInfo>
-								</Movie>
-							</StyledLink>
-						))
-					}
-				</MovieCardsDiv>
-
-				{ errorNoMovies && <Alert type='danger' header={ errorNoMovies.header } /> }
-
-				<SeeMoreDiv>
-					{ (loading) && <SpinnerLoading /> }
-					<Button
-						onClick={ () => fetchMovies(selectedGenre) }
-						label="Zobacz więcej.."
-					/>
-				</SeeMoreDiv>
-			</div> */}
-
 		</>
 	)
 }
