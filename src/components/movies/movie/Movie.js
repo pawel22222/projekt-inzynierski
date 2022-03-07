@@ -73,24 +73,25 @@ function Movie() {
                 : (average * counter - userRating.ratingValue) / (counter - 1)
         })
 
-        window.location.reload()
+        getMovie(movieId)
+    }
+
+    const getMovie = async (id) => {
+        try {
+            setError('')
+            setLoading(true)
+            await getMovieById(id)
+                .get()
+                .then((doc) => {
+                    setMovieDisplayPage(doc.data())
+                })
+        } catch (error) {
+            setError(`Failed to fetch movie. (${error})`)
+        }
+        setLoading(false)
     }
 
     useEffect(() => {
-        const getMovie = async (id) => {
-            try {
-                setError('')
-                setLoading(true)
-                await getMovieById(id)
-                    .get()
-                    .then((doc) => {
-                        setMovieDisplayPage(doc.data())
-                    })
-            } catch (error) {
-                setError(`Failed to fetch movie. (${error})`)
-            }
-            setLoading(false)
-        }
 
         getMovie(movieId)
     }, [movieId])
@@ -114,7 +115,7 @@ function Movie() {
         }
 
         getUserRate()
-    }, [])
+    }, [movieDisplayPage])
 
     return (
         <MovieDiv className="container">
@@ -141,7 +142,7 @@ function Movie() {
                             ? <>
                                 <h3 className='mb-3'>Twoja ocena:</h3>
 
-                                <StarRating movieId={ movieId } />
+                                <StarRating movieId={ movieId } getMovie={ getMovie } />
 
                                 { !!userRating.ratingValue &&
                                     <div style={ { width: '150px', display: 'flex' } }>

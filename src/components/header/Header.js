@@ -13,12 +13,19 @@ const Container = styled.div`
   width: 100%;
   padding: 5px;
   display: flex;
-`
+  @media (max-width: 768px) {
+    flex-direction: column;
+    justify-content: space-around;
+  }
+  `
 const AccountDiv = styled.div`
   text-align:center;
   display: flex;
   flex-flow: column;
   min-width: 150px;
+  @media (max-width: 768px) {
+    flex-direction: row;
+  }
 `
 //#endregion
 
@@ -26,6 +33,7 @@ export default function Header() {
   const [error, setError] = useState('')
   const history = useHistory()
   const { logout, currentUser, userInfo } = useAuth()
+  const windowWidth = document.body.offsetWidth
 
   async function handleLogOut() {
     setError('')
@@ -40,7 +48,7 @@ export default function Header() {
   const greetingUser = () => {
     if (userInfo?.name || userInfo?.displayName)
       return `Witaj  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`
-    else if (currentUser) return `Hi ${currentUser.email.split('@')[0]}`
+    else if (currentUser) return `Witaj ${currentUser.email.split('@')[0]}`
   }
 
   return (
@@ -50,7 +58,7 @@ export default function Header() {
       <Searchbar />
 
       <AccountDiv>
-        { greetingUser() }
+        { windowWidth > 768 && greetingUser() }
         { !!currentUser ? (
           <>
             <Link to="/profile" style={ { width: '100%' } }>

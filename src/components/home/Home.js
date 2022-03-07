@@ -25,6 +25,7 @@ const Li = styled.li`
 function Home() {
 
     return (
+        <div style={{padding: '0 10px'}}>
         <HomeDiv className='container my-3'>
             <H1 className='text-center'>Projekt inżynierski</H1>
             <P>Celem tej aplikacji jest umożliwienie użytkownikom wyszukiwanie, ocenianie oraz trafniejszego sugerowania filmów.</P>
@@ -46,6 +47,7 @@ function Home() {
                 <P>Po wybraniu gatunku filmowego i przedziałów wiekowych zostanie wygenerowana tabela ilości ocen w poszczególnych przedziałach wiekowych. Druga tabela zawiera teoretyczne ilości ocen jakie statystycznie są oczekiwane. Pod tabelami znajduje się policzony test zgodności chi kwadrat oraz współczynnik zbieżności T-Czuprowa i współczynnik V-Cramera</P>
             </ul>
         </HomeDiv>
+        </div>
     )
 }
 

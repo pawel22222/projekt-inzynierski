@@ -4,7 +4,6 @@ import { AuthProvider } from '../../context/AuthContext'
 import PrivateRoute from '../privateRoute/PrivateRoute'
 // import uploadMovies from '../../data/uploadMovies'
 
-// Components
 import SignUp from '../SignUp/SignUp'
 import Profile from '../profile/Profile'
 import Login from '../login/Login'
@@ -22,16 +21,14 @@ import Footer from '../footer/Footer'
 function Root() {
 
   return (
-
-    <div>
-      <GlobalStyle />
-
       <Router>
+        <GlobalStyle />
+        
         <AuthProvider>
           <Header />
           <Nav />
 
-          <main style={ { minHeight: 'calc(100vh - 220px)' } }>
+          <main style={ { minHeight: 'calc(100vh - 230px)' } }>
             <Switch>
               <Route path="/" exact component={ Home } />
               <PrivateRoute path="/profile" component={ Profile } />
@@ -49,7 +46,6 @@ function Root() {
           <Footer />
         </AuthProvider>
       </Router>
-    </div>
   )
 }
 

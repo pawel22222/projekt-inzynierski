@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { db } from '../../firebase'
+import jsPDF from 'jspdf'
 
 import SpinnerLoading from '../UI/SpinnerLoading'
 import Alert from '../UI/AlertMain'
@@ -243,9 +244,25 @@ function Statistic() {
         setLoading(false)
     }
 
+    const factors = [
+        { value: chiSquare, header: 'Wartosc statystyki chi kwadrat: ' },
+        { value: tCzuprow, header: 'Wspolczynnik zbieznosci T-Czuprowa: ' },
+        { value: vCramer, header: 'Wspolczynnik V-Cramera: ' }
+    ]
+
     useEffect(() => {
         users.length && ageRanges.length && processStatistic()
     }, [users, ageRanges])
+
+    function generatePDF() {
+        const doc = new jsPDF('p', 'pt', 'b4')
+
+        doc.html(document.querySelector('#statsDoc'), {
+            callback: function (pdf) {
+                pdf.save('statystyki.pdf')
+            }
+        })
+    }
 
     return (
         <div>
@@ -254,6 +271,7 @@ function Statistic() {
                 setAgeRanges={ setAgeRanges }
                 errorFilter={ errorFilter }
                 setErrorFilter={ setErrorFilter }
+                generatePDF={ generatePDF }
             />
             <div className="container">
                 { error && <Alert type="danger" desc={ error } /> }
@@ -265,14 +283,14 @@ function Statistic() {
                 && error.length === 0
                 && errorFilter.length === 0
                 && dataTable.length > 0
-                && <div className="container-md">
+                && <div className="container-md" id="statsDoc">
 
                     <h1 className="text-center mb-5">
                         { 'Kategoria filmowa: ' + selectedGenre }
                     </h1>
 
                     <Table
-                        header={ `Tabela 1. Liczebność ocen użytkowników w przedziałach wiekowych. ` }
+                        header={ `Tabela 1. Liczebnosc ocen uzytkownikow w przedzialach wiekowych. ` }
                         dataTable={ dataTable }
                         ageRanges={ ageRanges }
                     />
@@ -280,22 +298,19 @@ function Statistic() {
                     <div className="my-5"></div>
 
                     <Table
-                        header={ `Tabela 2. Oczekiwana (teoretyczna) liczebność ocen użytkowników w przedziałach wiekowych.` }
+                        header={ `Tabela 2. Oczekiwana (teoretyczna) liczebnosc ocen uzytkownikow w przedzialach wiekowych.` }
                         dataTable={ theoreticalDataTable }
                         ageRanges={ ageRanges }
                     />
 
                     <div className="my-5">
                         {
-                            [{ value: chiSquare, header: 'Wartość statystyki chi kwadrat: ' },
-                            { value: tCzuprow, header: 'Współczynnik zbieżności T-Czuprowa: ' },
-                            { value: vCramer, header: 'Współczynnik V-Cramera: ' }]
-                                .map(({ value, header }, i) => (
-                                    <h2 key={ i }>
-                                        { header }
-                                        <b>{ value.toFixed(2) }</b>
-                                    </h2>
-                                ))
+                            factors.map(({ value, header }, i) => (
+                                <h2 key={ i }>
+                                    { header }
+                                    <b>{ value.toFixed(2) }</b>
+                                </h2>
+                            ))
                         }
                     </div>
                 </div>

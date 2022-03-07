@@ -5,6 +5,7 @@ const rotate360 = keyframes`
   to {transform: rotate(360deg);}
 `
 const SpinnerLoading = styled.div`
+  z-index: 99;
   position: fixed;
   top: 0;
   left: 0;

@@ -20,7 +20,8 @@ function FilterStats({
     setSelectedGenre,
     setAgeRanges,
     errorFilter,
-    setErrorFilter
+    setErrorFilter,
+    generatePDF,
 }) {
     const genres = ['Akcja', 'Przygodowy', 'Animowany', 'Komedia', 'Kryminał', 'Dokumentalny', 'Dramat', 'Familijny', 'Fantasy', 'Historyczny', 'Horror', 'Muzyczny', 'Romans', 'Science Fiction', 'Thriller', 'Wojenny', 'Western']
 
@@ -138,7 +139,7 @@ function FilterStats({
                 ) }
             </div>
 
-            <div className="d-flex my-2">
+            <div className="d-flex my-2" style={ { width: '400px' } }>
                 <Button
                     label='Generuj tabelę'
                     color='primary'
@@ -148,7 +149,7 @@ function FilterStats({
                 <Button
                     label='Pobierz PDF'
                     color='secondary'
-                    onClick={ () => 0 }
+                    onClick={ () => generatePDF() }
                 />
             </div>
 

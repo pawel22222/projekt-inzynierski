@@ -17,6 +17,9 @@ const Input = styled.input`
     width: 70%;
     border-radius: 5px;
     border: 2px solid #7998ff;
+    @media (max-width: 768px) {
+        width: 95%;
+    }
     &:focus{
         outline: 3px #7998ff solid;
     }
@@ -30,6 +33,9 @@ const SearchResults = styled.div`
     border: 2px solid #7998ff;
     border-top: none;
     border-radius: 5px;
+    @media (max-width: 768px) {
+        width: 95%;
+    }
 `
 //#endregion
 

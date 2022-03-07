@@ -5,7 +5,7 @@ import { db } from '../../firebase'
 import Box from '@mui/material/Box'
 import Rating from '@mui/material/Rating'
 
-const StarRating = ({ movieId }) => {
+const StarRating = ({ movieId, getMovie }) => {
     const [rating, setRating] = useState({ ratingValue: 0 })
     const { currentUser } = useAuth()
 
@@ -64,10 +64,10 @@ const StarRating = ({ movieId }) => {
             })
     }
 
-    const setUserRate = (id, value) => {
-        setMovieData(value)
+    const setUserRate = async (id, value) => {
+        await setMovieData(value)
 
-        db.collection('ratings')
+        await db.collection('ratings')
             .doc(id)
             .set({
                 ratingId: id,
@@ -82,6 +82,8 @@ const StarRating = ({ movieId }) => {
             movieId: movieId,
             ratingValue: value,
         })
+
+        getMovie(movieId)
     }
 
     return (
