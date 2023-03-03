@@ -1,32 +1,32 @@
-# Projekt inżynierski: przeglądarka filmów (Softwareowy moduł sugerowania filmów dla platform VOD)
+# Engineering project: movie browser (Software movie suggestion module for VOD platforms)
 
-Aplikacja jest dostępna do wypróbowania: https://projekt-inzynierski.netlify.app/
+The app is available to try: https://projekt-inzynierski.netlify.app/
 
 ![filmy](https://user-images.githubusercontent.com/45629012/151399465-6db5b6cf-a254-44fe-a55d-609e7bf0ac92.jpeg)
 
-## Dokumentacja
+## Documentation
 
-### Opis
+### Description
 
-Aplikacja webowa pozwala na wyszukiwanie, ocenianie filmów przez użytkowników. Aplikacja ma także służyć do trafniejszego sugerowania filmów użytkownikom do czego wykorzystuje twierdzenie Bayesa z teorii prawdopodobieństwa. 
+The web application allows users to search and rate movies. The application is also to be used to more accurately suggest movies to users, for which it uses the Bayes theorem from probability theory.
 
-### Architektura
+### Architecture
 
-Aplikacja oparta jest o architekturę "serverless", Firebase Authentication odpowiada za uwierzytelnianie użytkowników, a Cloud Firestore zapewnia NoSQL-ową bazę danych. Poniżej przedstawiony jest schemat bazy danych.
+The application is based on the "serverless" architecture, Firebase Authentication is responsible for user authentication, and Cloud Firestore provides a NoSQL database. The database schema is shown below.
 
 ![Schemat bazy danych](https://user-images.githubusercontent.com/45629012/151402118-82ccfc73-379d-4580-8562-cc4efbc71daf.png)
 
-### Interfejs użytkownika
+### User Interface
 
-Poniżej przedstawiony jest diagram przypadków użycia określający jakie akcje może podjąć osoba używająca aplikacji.
+Below is a use case diagram that defines what actions a person using the application can take.
 
 ![Diagram przypadków użycia drawio](https://user-images.githubusercontent.com/45629012/151405050-de7d90b4-f0af-4445-b4f9-7806474e95d6.png)
 
-Aplikacja składa się z 4 głównych widoków:
-- strona główna - przedstawia poszczególne zakładki aplikacji
-- filmy - wyświetla wszystkie filmy w formie nieskończonego przewijania, posiada filtrowanie po gatunku filmu
-- polecane filmy - wyświetla spersonalizowany ranking filmów biorący pod uwagę wiek i płeć użytkownika (algorytm używający twierdzenia Bayesa)
-- statystyki - pozwala generować statystyki ocen filmów z danego gatunku i oblicza siłę korelacji między wiekiem, a wystawianym ocenom w danym gatunku
+The application consists of 4 main views:
+- home page - shows individual tabs of the application
+- movies - displays all movies in the form of infinite scrolling, has filtering by movie genre
+- recommended movies - displays a personalized ranking of movies taking into account the age and gender of the user (an algorithm using the Bayes theorem)
+- statistics - allows you to generate statistics of movie ratings from a given genre and calculates the strength of correlation between age and ratings in a given genre
 
 ## Getting Started
 
