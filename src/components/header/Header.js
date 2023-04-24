@@ -1,11 +1,11 @@
-import { useState } from 'react'
-import styled from 'styled-components'
-import { useAuth } from '../../context/AuthContext'
-import { useHistory, Link } from 'react-router-dom'
-import Searchbar from '../searchbar/Searchbar'
+import { useState } from 'react';
+import styled from 'styled-components';
+import { useAuth } from '../../context/AuthContext';
+import { useHistory, Link } from 'react-router-dom';
+import Searchbar from '../searchbar/Searchbar';
 
-import Button from '../UI/ButtonMain'
-import Alert from '../UI/AlertMain'
+import Button from '../UI/ButtonMain';
+import Alert from '../UI/AlertMain';
 
 //#region Styled components
 const Container = styled.div`
@@ -17,77 +17,64 @@ const Container = styled.div`
     flex-direction: column;
     justify-content: space-around;
   }
-  `
+`;
 const AccountDiv = styled.div`
-  text-align:center;
+  text-align: center;
   display: flex;
   flex-flow: column;
   min-width: 150px;
   @media (max-width: 768px) {
     flex-direction: row;
   }
-`
+`;
 //#endregion
 
 export default function Header() {
-  const [error, setError] = useState('')
-  const history = useHistory()
-  const { logout, currentUser, userInfo } = useAuth()
-  const windowWidth = document.body.offsetWidth
+  const [error, setError] = useState('');
+  const history = useHistory();
+  const { logout, currentUser, userInfo } = useAuth();
+  const windowWidth = document.body.offsetWidth;
 
   async function handleLogOut() {
-    setError('')
+    setError('');
     try {
-      await logout()
-      history.push('/login')
+      await logout();
+      history.push('/login');
     } catch (error) {
-      setError(`Failed to log out. (${error})`)
+      setError(`Failed to log out. (${error})`);
     }
   }
 
   const greetingUser = () => {
     if (userInfo?.name || userInfo?.displayName)
-      return `Witaj  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`
-    else if (currentUser) return `Witaj ${currentUser.email.split('@')[0]}`
-  }
+      return `Witaj  ${userInfo.displayName ? userInfo.displayName : userInfo.name}`;
+    else if (currentUser) return `Witaj ${currentUser.email.split('@')[0]}`;
+  };
 
   return (
     <Container>
-      { error && <Alert type="danger" desc={ error } /> }
+      {error && <Alert type='danger' desc={error} />}
 
       <Searchbar />
 
       <AccountDiv>
-        { windowWidth > 768 && greetingUser() }
-        { !!currentUser ? (
+        {windowWidth > 768 && greetingUser()}
+        {!!currentUser ? (
           <>
-            <Link to="/profile" style={ { width: '100%' } }>
-              <Button
-                label="Moje konto"
-                type="button"
-                color="primary"
-              />
+            <Link to='/profile' style={{ width: '100%' }}>
+              <Button label='Moje konto' type='button' color='primary' />
             </Link>
 
-            <Button
-              onClick={ handleLogOut }
-              label="Wyloguj"
-              type="button"
-              color="secondary"
-            />
+            <Button onClick={handleLogOut} label='Wyloguj' type='button' color='secondary' />
           </>
         ) : (
           <>
-            <Link to="/login">
-              <Button
-                label="Zaloguj się"
-                type="button"
-                color="secondary"
-              />
+            <Link to='/login'>
+              <Button label='Zaloguj się' type='button' color='secondary' />
             </Link>
           </>
-        ) }
+        )}
       </AccountDiv>
     </Container>
-  )
+  );
 }

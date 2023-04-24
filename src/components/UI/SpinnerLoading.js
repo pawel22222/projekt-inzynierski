@@ -1,9 +1,9 @@
-import styled, { keyframes } from 'styled-components'
+import styled, { keyframes } from 'styled-components';
 
 const rotate360 = keyframes`
   from {transform: rotate(0deg);}
   to {transform: rotate(360deg);}
-`
+`;
 const SpinnerLoading = styled.div`
   z-index: 99;
   position: fixed;
@@ -20,6 +20,6 @@ const SpinnerLoading = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-`
+`;
 
-export default SpinnerLoading
+export default SpinnerLoading;

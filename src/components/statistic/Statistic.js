@@ -1,322 +1,322 @@
-import { useState, useEffect } from 'react'
-import { db } from '../../firebase'
-import jsPDF from 'jspdf'
+import { useState, useEffect } from 'react';
+import { db } from '../../firebase';
+import jsPDF from 'jspdf';
 
-import SpinnerLoading from '../UI/SpinnerLoading'
-import Alert from '../UI/AlertMain'
-import Table from './table/Table'
-import FilterStats from './filterStats/FilterStats'
+import SpinnerLoading from '../UI/SpinnerLoading';
+import Alert from '../UI/AlertMain';
+import Table from './table/Table';
+import FilterStats from './filterStats/FilterStats';
 
 function Statistic() {
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-    const [errorFilter, setErrorFilter] = useState('')
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [errorFilter, setErrorFilter] = useState('');
 
-    const [movies, setMovies] = useState([])
-    const [ratings, setRatings] = useState([])
-    const [users, setUsers] = useState([])
+  const [movies, setMovies] = useState([]);
+  const [ratings, setRatings] = useState([]);
+  const [users, setUsers] = useState([]);
 
-    const [selectedGenre, setSelectedGenre] = useState('')
-    const [ageRanges, setAgeRanges] = useState([])
+  const [selectedGenre, setSelectedGenre] = useState('');
+  const [ageRanges, setAgeRanges] = useState([]);
 
-    const currentYear = new Date().getFullYear()
+  const currentYear = new Date().getFullYear();
 
-    const [dataTable, setDataTable] = useState([])
-    const [theoreticalDataTable, setTheoreticalDataTable] = useState([])
-    const [chiSquare, setChiSquare] = useState(0)
-    const [tCzuprow, setTCzuprow] = useState(0)
-    const [vCramer, setVCramer] = useState(0)
+  const [dataTable, setDataTable] = useState([]);
+  const [theoreticalDataTable, setTheoreticalDataTable] = useState([]);
+  const [chiSquare, setChiSquare] = useState(0);
+  const [tCzuprow, setTCzuprow] = useState(0);
+  const [vCramer, setVCramer] = useState(0);
 
-    useEffect(() => {
-        const fetchMovies = (genre) => {
-            setLoading(true)
-            setError('')
+  useEffect(() => {
+    const fetchMovies = (genre) => {
+      setLoading(true);
+      setError('');
 
-            try {
-                db.collection('movies')
-                    .where('genre', 'array-contains', genre)
-                    .where('ratingCounter', '>', 0)
-                    .get()
-                    .then(querySnapshot => {
-                        let moviesOfGenre = []
-                        querySnapshot.forEach(doc => {
-                            moviesOfGenre.push(doc.data())
-                        })
+      try {
+        db.collection('movies')
+          .where('genre', 'array-contains', genre)
+          .where('ratingCounter', '>', 0)
+          .get()
+          .then((querySnapshot) => {
+            let moviesOfGenre = [];
+            querySnapshot.forEach((doc) => {
+              moviesOfGenre.push(doc.data());
+            });
 
-                        moviesOfGenre.length
-                            ? setMovies(moviesOfGenre)
-                            : setError('Brak danych')
-                    })
-            } catch (error) {
-                setError(`Failed to fetch movies data. ${error}`)
-                setLoading(false)
-            }
+            moviesOfGenre.length ? setMovies(moviesOfGenre) : setError('Brak danych');
+          });
+      } catch (error) {
+        setError(`Failed to fetch movies data. ${error}`);
+        setLoading(false);
+      }
+    };
+
+    selectedGenre && fetchMovies(selectedGenre);
+  }, [selectedGenre]);
+
+  useEffect(() => {
+    const fetchRating = (movies) => {
+      setError('');
+      setLoading(true);
+
+      return new Promise(() => {
+        let batches = [];
+
+        const movieIds = [...new Set(movies.map((el) => el.id.toString()))];
+
+        while (movieIds.length) {
+          const batch = movieIds.splice(0, 10);
+
+          batches.push(
+            new Promise((response) => {
+              try {
+                db.collection('ratings')
+                  .where('movieId', 'in', [...batch])
+                  .get()
+                  .then((results) =>
+                    response(results.docs.map((result) => ({ ...result.data() }))),
+                  );
+              } catch (error) {
+                setError(`Failed to fetch users data. ${error}`);
+                setLoading(false);
+              }
+            }),
+          );
         }
 
-        selectedGenre && fetchMovies(selectedGenre)
-    }, [selectedGenre])
+        Promise.all(batches).then((content) => {
+          setRatings(content.flat());
+        });
+      });
+    };
 
-    useEffect(() => {
-        const fetchRating = (movies) => {
-            setError('')
-            setLoading(true)
+    movies.length && fetchRating(movies);
+  }, [movies]);
 
-            return new Promise(() => {
-                let batches = []
+  useEffect(() => {
+    const fetchUsers = (ratings) => {
+      setError('');
+      setLoading(true);
 
-                const movieIds = [...new Set(movies.map(el => el.id.toString()))]
+      return new Promise(() => {
+        let batches = [];
 
-                while (movieIds.length) {
-                    const batch = movieIds.splice(0, 10)
+        const userIds = [...new Set(ratings.map((el) => el.userId))];
 
-                    batches.push(
-                        new Promise(response => {
-                            try {
-                                db.collection('ratings')
-                                    .where('movieId', 'in', [...batch])
-                                    .get()
-                                    .then(results =>
-                                        response(results.docs.map(result => ({ ...result.data() })))
-                                    )
-                            } catch (error) {
-                                setError(`Failed to fetch users data. ${error}`)
-                                setLoading(false)
-                            }
-                        })
-                    )
-                }
+        while (userIds.length) {
+          const batch = userIds.splice(0, 10);
 
-                Promise.all(batches).then(content => {
-                    setRatings(content.flat())
-                })
-            })
+          batches.push(
+            new Promise((response) => {
+              try {
+                db.collection('users')
+                  .where('id', 'in', [...batch])
+                  .get()
+                  .then((results) =>
+                    response(results.docs.map((result) => ({ ...result.data() }))),
+                  );
+              } catch (error) {
+                setError(`Failed to fetch users data. ${error}`);
+                setLoading(false);
+              }
+            }),
+          );
         }
 
-        movies.length && fetchRating(movies)
-    }, [movies])
+        Promise.all(batches).then((content) => {
+          setUsers(content.flat());
+        });
+      });
+    };
 
-    useEffect(() => {
-        const fetchUsers = (ratings) => {
-            setError('')
-            setLoading(true)
+    ratings.length && fetchUsers(ratings);
+  }, [ratings]);
 
-            return new Promise(() => {
-                let batches = []
+  function assignUsersToAgeRanges() {
+    let usersInRanges = ageRanges.map((el) => []);
 
-                const userIds = [...new Set(ratings.map(el => el.userId))]
+    users.forEach((user) => {
+      const userAge = -1 * (user.age - currentYear);
 
-                while (userIds.length) {
-                    const batch = userIds.splice(0, 10)
+      const ageRangeIndex = ageRanges.findIndex(({ from, to }) => userAge >= from && userAge <= to);
 
-                    batches.push(
-                        new Promise(response => {
-                            try {
-                                db.collection('users')
-                                    .where('id', 'in', [...batch])
-                                    .get()
-                                    .then(results =>
-                                        response(results.docs.map(result => ({ ...result.data() })))
-                                    )
-                            } catch (error) {
-                                setError(`Failed to fetch users data. ${error}`)
-                                setLoading(false)
-                            }
-                        })
-                    )
-                }
+      ageRangeIndex >= 0 && usersInRanges[ageRangeIndex].push(user.id);
+    });
 
-                Promise.all(batches).then(content => {
-                    setUsers(content.flat())
-                })
-            })
+    return usersInRanges;
+  }
 
-        }
+  function createTableOfValues(usersInRanges) {
+    let table = ageRanges.map((el) => [0, 0, 0, 0, 0]);
 
-        ratings.length && fetchUsers(ratings)
-    }, [ratings])
+    ratings.forEach((rating) => {
+      const index = usersInRanges.findIndex((arr) => arr.includes(rating.userId));
 
-    function assignUsersToAgeRanges() {
-        let usersInRanges = ageRanges.map(el => [])
+      index >= 0 && table[index][rating.ratingValue - 1]++;
+    });
 
-        users.forEach((user) => {
-            const userAge = -1 * (user.age - currentYear)
+    setDataTable(table);
+    return table;
+  }
 
-            const ageRangeIndex = ageRanges.findIndex(({ from, to }) =>
-                userAge >= from && userAge <= to)
+  function calcSumValuesInRows(tableOfValues) {
+    return tableOfValues.map((arr) => arr.reduce((acc, el) => acc + el));
+  }
 
-            ageRangeIndex >= 0 && usersInRanges[ageRangeIndex].push(user.id)
-        })
+  function calcSumValuesInColumns(tableOfValues) {
+    return tableOfValues.reduce((acc, arr) => {
+      arr.forEach((el, i) => {
+        acc[i] = (acc[i] || 0) + el;
+      });
+      return acc;
+    }, []);
+  }
 
-        return usersInRanges
-    }
+  function calcSumAllValues(sumValuesInRows) {
+    return sumValuesInRows.reduce((acc, el) => acc + el);
+  }
 
-    function createTableOfValues(usersInRanges) {
-        let table = ageRanges.map(el => [0, 0, 0, 0, 0])
+  function createTableOfTheoreticalValues(
+    tableOfValues,
+    sumValuesInRows,
+    sumValuesInColumn,
+    sumAllValues,
+  ) {
+    return tableOfValues.map((arr, i) => {
+      return arr.map((el, j) => {
+        return (el = (sumValuesInRows[i] * sumValuesInColumn[j]) / sumAllValues);
+      });
+    });
+  }
 
-        ratings.forEach((rating) => {
-            const index = usersInRanges.findIndex(arr =>
-                arr.includes(rating.userId))
+  function calcChiSquare(tableOfValues, tableOfTheoreticalValues) {
+    return tableOfValues.reduce((acc, arr, i) => {
+      return (acc =
+        acc +
+        arr.reduce((acc2, el, j) => {
+          return tableOfTheoreticalValues[i][j] === 0
+            ? (acc2 = acc2 + 0)
+            : (acc2 =
+                acc2 + (el - tableOfTheoreticalValues[i][j]) ** 2 / tableOfTheoreticalValues[i][j]);
+        }, 0));
+    }, 0);
+  }
 
-            index >= 0 && table[index][rating.ratingValue - 1]++
-        })
+  function calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
+    return Math.sqrt(
+      chiSquare /
+        (sumAllValues * Math.sqrt((sumValuesInColumn.length - 1) * (sumValuesInRows.length - 1))),
+    );
+  }
 
-        setDataTable(table)
-        return table
-    }
+  function calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
+    return Math.sqrt(
+      chiSquare /
+        (sumAllValues *
+          Math.sqrt(
+            sumValuesInColumn.length - 1 <= sumValuesInRows.length - 1
+              ? sumValuesInColumn.length - 1
+              : sumValuesInRows.length - 1,
+          )),
+    );
+  }
 
-    function calcSumValuesInRows(tableOfValues) {
-        return tableOfValues.map(arr => arr.reduce((acc, el) => acc + el))
-    }
+  const processStatistic = () => {
+    setLoading(true);
+    setError('');
 
-    function calcSumValuesInColumns(tableOfValues) {
-        return tableOfValues.reduce((acc, arr) => {
-            arr.forEach((el, i) => {
-                acc[i] = (acc[i] || 0) + el
-            })
-            return acc
-        }, [])
-    }
+    const usersInAgeRanges = assignUsersToAgeRanges();
 
-    function calcSumAllValues(sumValuesInRows) {
-        return sumValuesInRows.reduce((acc, el) => acc + el)
-    }
+    const tableOfValues = createTableOfValues(usersInAgeRanges);
 
-    function createTableOfTheoreticalValues(tableOfValues, sumValuesInRows, sumValuesInColumn, sumAllValues) {
-        return tableOfValues.map((arr, i) => {
-            return arr.map((el, j) => {
-                return el = sumValuesInRows[i] * sumValuesInColumn[j] / sumAllValues
-            })
-        })
-    }
+    const sumValuesInRows = calcSumValuesInRows(tableOfValues);
+    const sumValuesInColumn = calcSumValuesInColumns(tableOfValues);
+    const sumAllValues = calcSumAllValues(sumValuesInRows);
 
-    function calcChiSquare(tableOfValues, tableOfTheoreticalValues) {
-        return tableOfValues.reduce((acc, arr, i) => {
-            return acc = acc + arr.reduce((acc2, el, j) => {
-                return tableOfTheoreticalValues[i][j] === 0
-                    ? acc2 = acc2 + 0
-                    : acc2 = acc2 + (((el - tableOfTheoreticalValues[i][j]) ** 2) / tableOfTheoreticalValues[i][j])
-            }, 0)
-        }, 0)
-    }
+    const tableOfTheoreticalValues = createTableOfTheoreticalValues(
+      tableOfValues,
+      sumValuesInRows,
+      sumValuesInColumn,
+      sumAllValues,
+    );
 
-    function calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
-        return Math.sqrt(chiSquare
-            / (sumAllValues * Math.sqrt((sumValuesInColumn.length - 1) * (sumValuesInRows.length - 1)))
-        )
-    }
+    const chiSquare = calcChiSquare(tableOfValues, tableOfTheoreticalValues);
+    const tCzuprow = calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues);
+    const vCramer = calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues);
 
-    function calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues) {
-        return Math.sqrt(chiSquare
-            / (sumAllValues
-                * Math.sqrt(
-                    (sumValuesInColumn.length - 1) <= (sumValuesInRows.length - 1)
-                        ? (sumValuesInColumn.length - 1)
-                        : (sumValuesInRows.length - 1)
-                )
-            )
-        )
-    }
+    setDataTable(tableOfValues);
+    setTheoreticalDataTable(tableOfTheoreticalValues);
+    setChiSquare(chiSquare);
+    setTCzuprow(tCzuprow);
+    setVCramer(vCramer);
 
-    const processStatistic = () => {
-        setLoading(true)
-        setError('')
+    setLoading(false);
+  };
 
-        const usersInAgeRanges = assignUsersToAgeRanges()
+  const factors = [
+    { value: chiSquare, header: 'Wartosc statystyki chi kwadrat: ' },
+    { value: tCzuprow, header: 'Wspolczynnik zbieznosci T-Czuprowa: ' },
+    { value: vCramer, header: 'Wspolczynnik V-Cramera: ' },
+  ];
 
-        const tableOfValues = createTableOfValues(usersInAgeRanges)
+  useEffect(() => {
+    users.length && ageRanges.length && processStatistic();
+  }, [users, ageRanges]);
 
-        const sumValuesInRows = calcSumValuesInRows(tableOfValues)
-        const sumValuesInColumn = calcSumValuesInColumns(tableOfValues)
-        const sumAllValues = calcSumAllValues(sumValuesInRows)
+  function generatePDF() {
+    const doc = new jsPDF('p', 'pt', 'b4');
 
-        const tableOfTheoreticalValues = createTableOfTheoreticalValues(tableOfValues, sumValuesInRows, sumValuesInColumn, sumAllValues)
+    doc.html(document.querySelector('#statsDoc'), {
+      callback: function (pdf) {
+        pdf.save('statystyki.pdf');
+      },
+    });
+  }
 
-        const chiSquare = calcChiSquare(tableOfValues, tableOfTheoreticalValues)
-        const tCzuprow = calcTCzprow(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues)
-        const vCramer = calcVCramer(chiSquare, sumValuesInRows, sumValuesInColumn, sumAllValues)
+  return (
+    <div>
+      <FilterStats
+        setSelectedGenre={setSelectedGenre}
+        setAgeRanges={setAgeRanges}
+        errorFilter={errorFilter}
+        setErrorFilter={setErrorFilter}
+        generatePDF={generatePDF}
+      />
+      <div className='container'>
+        {error && <Alert type='danger' desc={error} />}
+        {loading && <SpinnerLoading />}
+      </div>
 
-        setDataTable(tableOfValues)
-        setTheoreticalDataTable(tableOfTheoreticalValues)
-        setChiSquare(chiSquare)
-        setTCzuprow(tCzuprow)
-        setVCramer(vCramer)
+      {!loading && error.length === 0 && errorFilter.length === 0 && dataTable.length > 0 && (
+        <div className='container-md' id='statsDoc'>
+          <h1 className='text-center mb-5'>{'Kategoria filmowa: ' + selectedGenre}</h1>
 
-        setLoading(false)
-    }
+          <Table
+            header={`Tabela 1. Liczebnosc ocen uzytkownikow w przedzialach wiekowych. `}
+            dataTable={dataTable}
+            ageRanges={ageRanges}
+          />
 
-    const factors = [
-        { value: chiSquare, header: 'Wartosc statystyki chi kwadrat: ' },
-        { value: tCzuprow, header: 'Wspolczynnik zbieznosci T-Czuprowa: ' },
-        { value: vCramer, header: 'Wspolczynnik V-Cramera: ' }
-    ]
+          <div className='my-5'></div>
 
-    useEffect(() => {
-        users.length && ageRanges.length && processStatistic()
-    }, [users, ageRanges])
+          <Table
+            header={`Tabela 2. Oczekiwana (teoretyczna) liczebnosc ocen uzytkownikow w przedzialach wiekowych.`}
+            dataTable={theoreticalDataTable}
+            ageRanges={ageRanges}
+          />
 
-    function generatePDF() {
-        const doc = new jsPDF('p', 'pt', 'b4')
-
-        doc.html(document.querySelector('#statsDoc'), {
-            callback: function (pdf) {
-                pdf.save('statystyki.pdf')
-            }
-        })
-    }
-
-    return (
-        <div>
-            <FilterStats
-                setSelectedGenre={ setSelectedGenre }
-                setAgeRanges={ setAgeRanges }
-                errorFilter={ errorFilter }
-                setErrorFilter={ setErrorFilter }
-                generatePDF={ generatePDF }
-            />
-            <div className="container">
-                { error && <Alert type="danger" desc={ error } /> }
-                { loading && <SpinnerLoading /> }
-            </div>
-
-            {
-                !loading
-                && error.length === 0
-                && errorFilter.length === 0
-                && dataTable.length > 0
-                && <div className="container-md" id="statsDoc">
-
-                    <h1 className="text-center mb-5">
-                        { 'Kategoria filmowa: ' + selectedGenre }
-                    </h1>
-
-                    <Table
-                        header={ `Tabela 1. Liczebnosc ocen uzytkownikow w przedzialach wiekowych. ` }
-                        dataTable={ dataTable }
-                        ageRanges={ ageRanges }
-                    />
-
-                    <div className="my-5"></div>
-
-                    <Table
-                        header={ `Tabela 2. Oczekiwana (teoretyczna) liczebnosc ocen uzytkownikow w przedzialach wiekowych.` }
-                        dataTable={ theoreticalDataTable }
-                        ageRanges={ ageRanges }
-                    />
-
-                    <div className="my-5">
-                        {
-                            factors.map(({ value, header }, i) => (
-                                <h2 key={ i }>
-                                    { header }
-                                    <b>{ value.toFixed(2) }</b>
-                                </h2>
-                            ))
-                        }
-                    </div>
-                </div>
-            }
+          <div className='my-5'>
+            {factors.map(({ value, header }, i) => (
+              <h2 key={i}>
+                {header}
+                <b>{value.toFixed(2)}</b>
+              </h2>
+            ))}
+          </div>
         </div>
-    )
+      )}
+    </div>
+  );
 }
 
-export default Statistic
+export default Statistic;
