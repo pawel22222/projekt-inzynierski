@@ -1,29 +1,29 @@
-import GlobalStyle from '../../theme/GlobalStyle'
+import GlobalStyle from './theme/GlobalStyle'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { AuthProvider } from '../../context/AuthContext'
-import PrivateRoute from '../privateRoute/PrivateRoute'
+import { AuthProvider } from './context/AuthContext'
+import PrivateRoute from './components/privateRoute/PrivateRoute'
 // import uploadMovies from '../../data/uploadMovies'
 
-import SignUp from '../SignUp/SignUp'
-import Profile from '../profile/Profile'
-import Login from '../login/Login'
-import ForgotPassword from '../forgotPassword/ForgotPassword'
-import Header from '../header/Header'
-import UpdateProfile from '../UpdateProfile/UpdateProfile'
-import Nav from '../nav/Nav'
-import Home from '../home/Home'
-import Movies from '../movies/Movies'
-import Movie from '../movies/movie/Movie'
-import Statistic from '../statistic/Statistic'
-import RecomendedMovies from '../recommendedMovies/RecomendedMovies'
-import Footer from '../footer/Footer'
+import SignUp from './components/SignUp/SignUp'
+import Profile from './components/profile/Profile'
+import Login from './components/login/Login'
+import ForgotPassword from './components/forgotPassword/ForgotPassword'
+import Header from './components/header/Header'
+import UpdateProfile from './components/UpdateProfile/UpdateProfile'
+import Nav from './components/nav/Nav'
+import Home from './components/home/Home'
+import Movies from './components/movies/Movies'
+import Movie from './components/movies/movie/Movie'
+import Statistic from './components/statistic/Statistic'
+import RecomendedMovies from './components/recommendedMovies/RecomendedMovies'
+import Footer from './components/footer/Footer'
 
-function Root() {
+function App() {
 
   return (
       <Router>
         <GlobalStyle />
-        
+
         <AuthProvider>
           <Header />
           <Nav />
@@ -49,4 +49,4 @@ function Root() {
   )
 }
 
-export default Root
+export default App
